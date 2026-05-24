@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import ImagesCarousel from "../components/ImagesCarousel";
 
 function Home() {
   return (
@@ -85,10 +86,10 @@ function Home() {
                 
 
           {/* PLACEHOLDER DEL CARRUSEL */}
-          <p className="text-gray-400 text-lg">
-           
-          </p>
-
+        
+           <ImagesCarousel /> {/* Insertamos imagenes del carrusel aquí */}
+          
+         
         </div>
 
       </section>
