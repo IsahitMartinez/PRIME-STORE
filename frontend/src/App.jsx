@@ -9,7 +9,7 @@ function App() {
   useEffect(() => { // useEffect para ocultar el splash screen después de un tiempo
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 4200); // Duración del splash screen en milisegundos
+    }, 3200); // Duración del splash screen en milisegundos
 
   return () => clearTimeout(timer); // Limpieza del timer si el componente se desmonta antes de que termine el tiempo
   }, []);

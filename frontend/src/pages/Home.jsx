@@ -1,46 +1,95 @@
+import Navbar from "../components/Navbar";
+
 function Home() {
   return (
 
-    // CONTENEDOR PRINCIPAL DEL HOME
+    // CONTENEDOR PRINCIPAL
     <div className="min-h-screen bg-[#fefefc]">
 
+      {/* NAVBAR */}
+      <Navbar />
+
       {/* HERO SECTION */}
-      <section className="h-screen flex flex-col justify-center px-20">
+      <section
+        className="
+          h-screen
+          flex
+          items-center
+          justify-between
+          px-24
+          gap-20
+        "
+      >
 
-        {/* TEXTO PEQUEÑO */}
-        <p className="text-sm tracking-[0.3em] text-gray-500 mb-4">
-          VISTE Y ENTRENA PREMIUM
-        </p>
+        {/* ========================================= */}
+        {/* COLUMNA IZQUIERDA */}
+        {/* ========================================= */}
 
-        {/* TITULO PRINCIPAL */}
-        <h1
-          className="text-[10rem] leading-none text-black"
-          style={{ fontFamily: "Bebas Neue" }}
+        <div className="flex-1 max-w-xl">
+
+          {/* TEXTO PEQUEÑO */}
+          <p className="text-sm tracking-[0.3em] text-gray-500 mb-4">
+            VISTE Y ENTRENA PREMIUM
+          </p>
+
+          {/* TITULO PRINCIPAL */}
+          <h1
+            className="text-[10rem] leading-none text-black"
+            style={{ fontFamily: "Bebas Neue" }}
+          >
+            PRIME
+          </h1>
+
+          {/* DESCRIPCIÓN */}
+          <p className="text-lg text-gray-600 mt-8 leading-relaxed">
+            Colecciones deportivas con la mejor calidad,
+            al mejor precio, no lo pienses 2 veces.
+          </p>
+
+          {/* BOTON */}
+          <button
+            className="
+              mt-10
+              px-10
+              py-4
+              bg-black
+              text-white
+              rounded-full
+              hover:bg-gray-800
+              transition
+            "
+          >
+            COMPRAR AHORA
+          </button>
+        </div>
+
+        {/* ========================================= */}
+        {/* COLUMNA DERECHA */}
+        {/* ========================================= */}
+
+      <div
+         className="
+            w-[550px]
+            h-[500px]
+            rounded-[2.5rem]
+            border border-gray-300
+            mt-20
+          bg-[#ece8e1]
+            flex
+            items-center
+            justify-center
+            overflow-hidden
+            shrink-0
+                    "
         >
-          PRIME
-        </h1>
+                
 
-        {/* SUBTITULO */}
-        <p className="text-lg text-gray-600 max-w-xl mt-6">
-          Colecciones deportivas con la mejor calidad, al mejor precio, no lo pienses 2 veces.
-        </p>
+          {/* PLACEHOLDER DEL CARRUSEL */}
+          <p className="text-gray-400 text-lg">
+           
+          </p>
 
-        {/* BOTON */}
-        <button
-          className="
-            mt-10
-            w-fit
-            px-8
-            py-4
-            bg-black
-            text-white
-            rounded-full
-            hover:bg-gray-800
-            transition
-          "
-        >
-          COMPRAR AHORA
-        </button>
+        </div>
 
       </section>
     </div>
