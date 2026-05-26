@@ -1,6 +1,8 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import SplashScreen from "./components/SplashScreen";
 import Home from "./pages/Home";
+import Shop from "./pages/Shop";
 
 
 function App() {
@@ -14,12 +16,37 @@ function App() {
   return () => clearTimeout(timer); // Limpieza del timer si el componente se desmonta antes de que termine el tiempo
   }, []);
  
-  return ( // Mostramos el SplashScreen o el Home dependiendo del estado showSplash
-    <>
 
-      {showSplash ? <SplashScreen /> : <Home />}
-    </>
+    if (showSplash) {
+    return <SplashScreen />;
+  } 
+  
+
+
+return (
+  <Router>
+
+    <Routes>
+   
+        {/* HOME */}
+        <Route
+          path="/"
+          element={<Home />}
+        />
+
+        {/* SHOP */}
+        <Route
+          path="/shop"
+          element={<Shop />}
+        />
+
+      </Routes>
+
+    </Router>
   );
 }
+
+
+
 
 export default App

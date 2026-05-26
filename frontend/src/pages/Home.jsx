@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import ImagesCarousel from "../components/ImagesCarousel";
+import { Link } from "react-router-dom";
 
 function Home() {
   return (
@@ -10,7 +11,7 @@ function Home() {
       {/* NAVBAR */}
       <Navbar />
 
-      {/* HERO SECTION */}
+      {/* HOME SECTION */}
       <section
         className="
           h-screen
@@ -48,6 +49,7 @@ function Home() {
           </p>
 
           {/* BOTON */}
+          <Link to="/shop">
           <button
             className="
               mt-10
@@ -62,6 +64,7 @@ function Home() {
           >
             COMPRAR AHORA
           </button>
+        </Link>
         </div>
 
         {/* ========================================= */}
