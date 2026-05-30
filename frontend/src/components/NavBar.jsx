@@ -10,7 +10,7 @@ function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full z-30 bg-[#fefefc]">
 
-      <div className="w-full px-10 py-3 flex items-center">
+      <div className="w-full px-10 py-2 flex items-center">
 
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-2">
@@ -69,6 +69,7 @@ function Navbar() {
               text-black
               hover:text-gray-600
               transition
+              cursor-pointer
             "
           >
             SHOP

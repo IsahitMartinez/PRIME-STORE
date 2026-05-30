@@ -73,7 +73,7 @@ const Products = [
     
 ];
 
-function Shop() {
+function Shop( { addToCart } ) {
     return (
 
 
@@ -97,9 +97,16 @@ function Shop() {
                     <h2 className="text-xl font-bold">{product.nombre}</h2>
                     <p className="text-lg text-green-500">{product.precio}</p>
                     <p className="text-sm text-gray-500">{product.categoria}</p>
-                     <button className="mt-5 w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition">
+
+            <button 
+             onClick={() => addToCart(product)}
+             className="mt-5 w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition"
+             >
+    
               AGREGAR AL CARRITO
-            </button>
+             
+             </button>
+            
                 </div>
             
             

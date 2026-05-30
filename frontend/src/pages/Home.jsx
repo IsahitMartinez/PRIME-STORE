@@ -28,6 +28,7 @@ function Home() {
         {/* ========================================= */}
 
         <div className="flex-1 max-w-xl">
+          
 
           {/* TEXTO PEQUEÑO */}
           <p className="text-sm tracking-[0.3em] text-gray-500 mb-4">
@@ -60,11 +61,14 @@ function Home() {
               rounded-full
               hover:bg-gray-800
               transition
+              cursor-pointer
             "
           >
             COMPRAR AHORA
           </button>
         </Link>
+
+
         </div>
 
         {/* ========================================= */}
