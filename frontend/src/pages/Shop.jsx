@@ -73,12 +73,15 @@ const Products = [
     
 ];
 
-function Shop( { addToCart } ) {
+function Shop( { addToCart, cartCount, openCart } ) {
     return (
 
 
     <div className="min-h-screen bg-[#fefefc] p-20"> {/* Contenedor principal con fondo claro y padding */  }
-         <Navbar /> {/* Navbar en la parte superior */ }
+         <Navbar
+          cartCount={cartCount} // Aquí puedes pasar el número de productos en el carrito si lo tienes en el estado
+          openCart={openCart} // Aquí puedes pasar una función para abrir el carrito si lo tienes implementado
+         /> {/* Navbar en la parte superior */ }
       <h1
         className="text-7xl text-black mt-10" 
         style={{ fontFamily: "Bebas Neue" }}

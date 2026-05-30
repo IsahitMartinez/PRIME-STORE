@@ -6,7 +6,7 @@ import logo from "../assets/ONLYFIGURE.png";
 
 const letters = ["P", "R", "I", "M", "E"];
 
-function Navbar() {
+function Navbar( { cartCount, openCart } ) {
   return (
     <nav className="fixed top-0 left-0 w-full z-30 bg-[#fefefc]">
 
@@ -140,12 +140,40 @@ function Navbar() {
             <User size={22} strokeWidth={1.8} />
           </button>
 
-          {/* CARRITO */}
+         {/* CARRITO */}
           <button
-            className="hover:text-gray-600 transition"
+            onClick={openCart}
+            className="
+              relative
+              hover:text-gray-600
+              transition
+            "
             aria-label="Carrito"
           >
-            <ShoppingBag size={22} strokeWidth={1.8} />
+            <ShoppingBag
+              size={22}
+              strokeWidth={1.8}
+            />
+
+            <span
+              className="
+                absolute
+                -top-2
+                -right-2
+                bg-black
+                text-white
+                text-xs
+                rounded-full
+                w-5
+                h-5
+                flex
+                items-center
+                justify-center
+              "
+            >
+              {cartCount}
+            </span>
+
           </button>
 
         </div>

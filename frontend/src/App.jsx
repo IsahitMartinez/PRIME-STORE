@@ -54,8 +54,15 @@ function App() {
         {/* SHOP */}
         <Route
           path="/shop"
-          element={<Shop addToCart={addToCart} />}
+          element=
+          {<Shop
+           addToCart={addToCart} 
+           cartCount={cartItems.length}
+           openCart={() => setIsCartOpen(true)}
+
         />
+       }
+     />
         
       </Routes>
       

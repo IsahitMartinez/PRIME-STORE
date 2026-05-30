@@ -9,7 +9,10 @@ function Home() {
     <div className="min-h-screen bg-[#fefefc]">
 
       {/* NAVBAR */}
-      <Navbar />
+      <Navbar
+       cartCount={cartCount} // Aquí puedes pasar el número de productos en el carrito si lo deseas
+       openCart={openCart} // Aquí puedes pasar una función para abrir el carrito si lo deseas
+      />
 
       {/* HOME SECTION */}
       <section
