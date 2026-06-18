@@ -32,6 +32,11 @@ function App() {
     if (showSplash) {
     return <SplashScreen />;
    } 
+   function removeFromCart(productId) {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.id !== productId)
+    );
+  } 
   
 
 
@@ -40,7 +45,8 @@ function App() {
     <SideBarCart // Componente del carrito lateral
           isOpen={isCartOpen} // Función para cerrar el carrito
           onClose={() => setIsCartOpen(false)} // Productos en el carrito
-          cartItems={cartItems} //Estado para controlar la visibilidad del carrito
+          cartItems={cartItems} // Función para agregar productos al carrito
+          removeFromCart={removeFromCart} // Función para eliminar productos del carrito
     />
 
     <Routes>
@@ -59,6 +65,7 @@ function App() {
            addToCart={addToCart} 
            cartCount={cartItems.length}
            openCart={() => setIsCartOpen(true)}
+           removeFromCart={removeFromCart}
 
         />
        }

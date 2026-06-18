@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-function SideBarCart({ isOpen, onClose, cartItems }) {
+function SideBarCart({ isOpen, onClose, cartItems, removeFromCart }) {
   return (
     <div
       className={`
@@ -47,8 +47,10 @@ function SideBarCart({ isOpen, onClose, cartItems }) {
 
                 <p className="text-gray-500">{item.precio}</p>
 
-                <button className="mt-2 text-sm text-gray-500 hover:underline">
-                  Eliminar
+                <button onClick={() => removeFromCart(item.id)}
+                className="mt-2 text-sm text-gray-500 hover:underline"
+                >
+                                  Eliminar
                 </button>
               </div>
             </div>
