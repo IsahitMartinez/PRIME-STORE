@@ -88,7 +88,7 @@ function Shop({ addToCart, cartCount, openCart }) {
 
       {/* FILTROS POR CATEGORÍA */}
       {!loading && products.length > 0 && (
-        <div className="flex flex-wrap gap-4 mt-4">
+        <div className="flex flex-wrap gap-4 mt-6">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -136,6 +136,7 @@ function Shop({ addToCart, cartCount, openCart }) {
           {filteredProducts.map((product) => {
             const isHovered = hoveredId === product.id;
             const isOutStock = product.stock !== undefined && product.stock <= 0;
+            const isNewDrop = product.is_new || product.is_new_drop;
 
             return (
               <div
@@ -153,10 +154,17 @@ function Shop({ addToCart, cartCount, openCart }) {
                 }}
                 className="bg-white p-4 rounded-3xl cursor-pointer relative"
               >
-                {/* ETIQUETA AGOTADO / STOCK */}
+                {/* ETIQUETA AGOTADO */}
                 {isOutStock && (
                   <span className="absolute top-7 left-7 z-10 bg-red-500 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase shadow-md">
                     AGOTADO
+                  </span>
+                )}
+
+                {/* BADGE NUEVO DROP */}
+                {!isOutStock && isNewDrop && (
+                  <span className="absolute top-7 left-7 z-10 bg-black text-white text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase shadow-md border border-gray-700 flex items-center gap-1">
+                    NUEVO DROP ⚡
                   </span>
                 )}
 

@@ -37,26 +37,35 @@ function App() {
     }
   }, [cartItems]);
 
-  // Agregar producto agrupando por ID y Talla
+  // Agregar producto agrupando por ID y Talla + Validación de Stock
   function addToCart(product) {
-    setCartItems((prevItems) => {
-      const sizeKey = product.selectedSize || "M";
-      const existingItem = prevItems.find(
-        (item) => String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
-      );
+  const sizeKey = product.selectedSize || "M";
+  const existingItem = cartItems.find(
+    (item) => String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
+  );
 
-      if (existingItem) {
-        return prevItems.map((item) =>
-          String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
-            ? { ...item, cantidad: (parseInt(item.cantidad) || 1) + 1 }
-            : item
-        );
-      }
-      return [...prevItems, { ...product, cantidad: 1, selectedSize: sizeKey }];
-    });
+  const currentQtyInCart = existingItem ? parseInt(existingItem.cantidad) || 1 : 0;
+  const maxStock = product.stock !== undefined ? product.stock : 999;
 
+  // Si supera el stock, simplemente abrimos el carrito sin mostrar un alert nativo del navegador
+  if (currentQtyInCart + 1 > maxStock) {
     setIsCartOpen(true);
+    return;
   }
+
+  setCartItems((prevItems) => {
+    if (existingItem) {
+      return prevItems.map((item) =>
+        String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
+          ? { ...item, cantidad: currentQtyInCart + 1 }
+          : item
+      );
+    }
+    return [...prevItems, { ...product, cantidad: 1, selectedSize: sizeKey }];
+  });
+
+  setIsCartOpen(true);
+}
 
   // Modificar cantidad (+1 / -1)
   function updateQuantity(productId, delta) {
@@ -78,11 +87,17 @@ function App() {
     if (isNaN(parsedQty) || parsedQty < 1) return;
 
     setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        String(item.id) === String(productId)
-          ? { ...item, cantidad: parsedQty }
-          : item
-      )
+      prevItems.map((item) => {
+        if (String(item.id) === String(productId)) {
+          const maxStock = item.stock !== undefined ? item.stock : 999;
+          if (parsedQty > maxStock) {
+            alert(`Solo hay ${maxStock} unidades disponibles.`);
+            return { ...item, cantidad: maxStock };
+          }
+          return { ...item, cantidad: parsedQty };
+        }
+        return item;
+      })
     );
   }
 
