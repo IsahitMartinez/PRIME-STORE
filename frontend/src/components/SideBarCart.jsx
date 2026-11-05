@@ -1,61 +1,133 @@
-import { X } from "lucide-react";
+import React from "react";
 
-function SideBarCart({ isOpen, onClose, cartItems, removeFromCart }) {
+function SideBarCart({ 
+  isOpen, 
+  onClose, 
+  cartItems, 
+  updateQuantity, 
+  setQuantityDirect, 
+  removeFromCart, 
+  checkoutWhatsApp 
+}) {
+  if (!isOpen) return null;
+
+  // Calculamos el total exacto (Precio * Cantidad)
+  const totalAmount = cartItems.reduce((acc, item) => {
+    const price = parseFloat(item.price) || 0;
+    const qty = parseInt(item.cantidad) || 1;
+    return acc + (price * qty);
+  }, 0);
+
   return (
-    <div
-      className={`
-        fixed top-0 right-0 h-full w-80
-        bg-[#fefefc] z-50 shadow-2xl p-8
-        transform transition-transform duration-300
-        ${isOpen ? "translate-x-0" : "translate-x-full"}
-      `}
+    <div 
+      className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm transition-all"
+      onClick={onClose}
     >
-      {/* Encabezado */}
-      <div className="border-b border-gray-200 pb-4">
-        <div className="flex justify-between items-center">
-          <h2
-            className="text-4xl text-black"
-            style={{ fontFamily: "Bebas Neue" }}
+      <div 
+        className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col p-6 overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Cabecera */}
+        <div className="flex justify-between items-center border-b pb-4">
+          <h2 className="text-2xl font-bold" style={{ fontFamily: "Bebas Neue" }}>TU CARRITO PRIME</h2>
+          <button 
+            onClick={onClose}
+            className="text-gray-500 hover:text-black text-xl font-bold cursor-pointer"
           >
-            TU CARRITO
-          </h2>
-
-          <button onClick={onClose} aria-label="Cerrar carrito">
-            <X size={24} />
+            ✕
           </button>
         </div>
-      </div>
 
-      {/* Productos */}
-      <div className="mt-8">
-        {cartItems.length === 0 ? (
-          <p className="text-gray-500">Tu carrito está vacío.</p>
-        ) : (
-          cartItems.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center py-5 border-b border-gray-200"
-            >
-              <img
-                src={item.image}
-                alt={item.nombre}
-                className="w-16 h-16 object-cover rounded-xl"
-              />
+        {/* Lista de productos */}
+        <div className="flex-1 py-6 space-y-6 overflow-y-auto">
+          {cartItems.length === 0 ? (
+            <p className="text-center text-gray-400 mt-20">Tu carrito está vacío.</p>
+          ) : (
+            cartItems.map((item) => {
+              const currentQty = parseInt(item.cantidad) || 1;
 
-              <div className="ml-4">
-                <h3 className="text-lg font-medium">{item.nombre}</h3>
+              return (
+                <div key={item.id} className="flex items-center justify-between border-b border-gray-100 pb-4">
+                  
+                  {/* Foto e Info */}
+                  <div className="flex items-center gap-4">
+                    <img 
+                      src={item.image_url} 
+                      alt={item.name} 
+                      className="w-16 h-16 object-cover rounded-xl shrink-0 shadow-sm"
+                    />
+                    <div>
+                      <h3 className="font-bold text-sm text-gray-800">{item.name}</h3>
+                      <p className="text-green-600 font-semibold text-sm">{item.price} $</p>
+                    </div>
+                  </div>
 
-                <p className="text-gray-500">{item.precio}</p>
+                  {/* Controles (+ / Input / -) y Eliminar */}
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg p-1">
+                      
+                      {/* Botón Restar (-1) */}
+                      <button 
+                        type="button"
+                        onClick={() => updateQuantity(item.id, -1)}
+                        className="w-7 h-7 flex items-center justify-center rounded bg-white shadow-sm text-gray-700 hover:bg-gray-100 cursor-pointer font-bold select-none active:scale-95 transition-transform"
+                      >
+                        -
+                      </button>
+                      
+                      {/* Input editable */}
+                      <input 
+                        type="number" 
+                        value={currentQty}
+                        onChange={(e) => setQuantityDirect(item.id, e.target.value)}
+                        className="w-10 text-center text-sm font-bold bg-transparent outline-none text-black [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        min="1"
+                      />
 
-                <button onClick={() => removeFromCart(item.id)}
-                className="mt-2 text-sm text-gray-500 hover:underline"
-                >
-                                  Eliminar
-                </button>
-              </div>
+                      {/* Botón Sumar (+1) */}
+                      <button 
+                        type="button"
+                        onClick={() => updateQuantity(item.id, 1)}
+                        className="w-7 h-7 flex items-center justify-center rounded bg-white shadow-sm text-gray-700 hover:bg-gray-100 cursor-pointer font-bold select-none active:scale-95 transition-transform"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Botón Eliminar Rojo Minimalista */}
+                    <button 
+                      type="button"
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-red-500 hover:text-red-700 text-xs font-semibold tracking-wide transition-colors cursor-pointer"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Total y Checkout */}
+        {cartItems.length > 0 && (
+          <div className="border-t pt-4 mt-auto">
+            <div className="flex justify-between items-center text-xl font-bold mb-4">
+              <span>Total:</span>
+              <span className="text-green-600">{totalAmount.toFixed(2)} $</span>
             </div>
-          ))
+
+            <button 
+              type="button"
+              onClick={checkoutWhatsApp}
+              className="w-full bg-black text-white py-4 rounded-full font-bold hover:bg-green-700 transition cursor-pointer text-center shadow-lg hover:-translate-y-0.5"
+            >
+              FINALIZAR COMPRA POR WHATSAPP
+            </button>
+          </div>
         )}
+
       </div>
     </div>
   );

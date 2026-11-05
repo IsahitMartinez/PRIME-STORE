@@ -5,80 +5,109 @@ import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import SideBarCart from "./components/SideBarCart";
 
-
 function App() {
-  const [showSplash, setShowSplash] = useState(true); // Estado para controlar la visibilidad del splash screen
-  // Productos dentro del carrito
+  const [showSplash, setShowSplash] = useState(true);
   const [cartItems, setCartItems] = useState([]);
-
- // Sidebar abierto/cerrado
   const [isCartOpen, setIsCartOpen] = useState(false);
-    useEffect(() => { // useEffect para ocultar el splash screen después de un tiempo
-      const timer = setTimeout(() => {
-        setShowSplash(false);
-      }, 3200); // Duración del splash screen en milisegundos
 
-      return () => clearTimeout(timer); // Limpieza del timer si el componente se desmonta antes de que termine el tiempo
-      }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 3200);
 
-  // Agregar producto al carrito
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Agregar producto agrupando por ID
   function addToCart(product) {
-    setCartItems((prevItems) => [...prevItems, product]);
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => String(item.id) === String(product.id));
+      if (existingItem) {
+        return prevItems.map((item) =>
+          String(item.id) === String(product.id)
+            ? { ...item, cantidad: (parseInt(item.cantidad) || 1) + 1 }
+            : item
+        );
+      }
+      return [...prevItems, { ...product, cantidad: 1 }];
+    });
 
-    // Abrir sidebar automáticamente
     setIsCartOpen(true);
   }
 
-    if (showSplash) {
-    return <SplashScreen />;
-   } 
-   function removeFromCart(productId) {
+  // Sumar (+1) o Restar (-1) con conversión segura de ID
+  function updateQuantity(productId, delta) {
     setCartItems((prevItems) =>
-      prevItems.filter((item) => item.id !== productId)
+      prevItems.map((item) => {
+        if (String(item.id) === String(productId)) {
+          const currentQty = parseInt(item.cantidad) || 1;
+          const newQty = currentQty + delta;
+          // Evitamos que baje de 1 al presionar "-" (para borrar se usa el botón Eliminar)
+          return { ...item, cantidad: newQty > 0 ? newQty : 1 };
+        }
+        return item;
+      })
     );
-  } 
-  
+  }
 
+  // Escribir un número directo en el input
+  function setQuantityDirect(productId, newQty) {
+    const parsedQty = parseInt(newQty);
+    if (isNaN(parsedQty) || parsedQty < 1) return;
 
- return (
-  <Router>
-    <SideBarCart // Componente del carrito lateral
-          isOpen={isCartOpen} // Función para cerrar el carrito
-          onClose={() => setIsCartOpen(false)} // Productos en el carrito
-          cartItems={cartItems} // Función para agregar productos al carrito
-          removeFromCart={removeFromCart} // Función para eliminar productos del carrito
-    />
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        String(item.id) === String(productId)
+          ? { ...item, cantidad: parsedQty }
+          : item
+      )
+    );
+  }
 
-    <Routes>
-   
-        {/* HOME */}
-        <Route
-          path="/"
-          element={<Home />}
-        />
+  // Eliminar producto por completo
+  function removeFromCart(productId) {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => String(item.id) !== String(productId))
+    );
+  }
 
-        {/* SHOP */}
-        <Route
-          path="/shop"
-          element=
-          {<Shop
-           addToCart={addToCart} 
-           cartCount={cartItems.length}
-           openCart={() => setIsCartOpen(true)}
-           removeFromCart={removeFromCart}
-
-        />
-       }
-     />
-        
-      </Routes>
-      
-
-    </Router>
+  // Total de piezas para el badge
+  const totalCartCount = cartItems.reduce(
+    (acc, item) => acc + (parseInt(item.cantidad) || 1),
+    0
   );
 
+  if (showSplash) {
+    return <SplashScreen />;
+  }
+
+  return (
+    <Router>
+      <SideBarCart
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cartItems={cartItems}
+        updateQuantity={updateQuantity}
+        setQuantityDirect={setQuantityDirect}
+        removeFromCart={removeFromCart}
+      />
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/shop"
+          element={
+            <Shop
+              addToCart={addToCart}
+              cartCount={totalCartCount}
+              openCart={() => setIsCartOpen(true)}
+              removeFromCart={removeFromCart}
+            />
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }
 
-
-
-export default App
+export default App;

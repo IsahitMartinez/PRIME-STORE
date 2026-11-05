@@ -6,14 +6,17 @@ import logo from "../assets/ONLYFIGURE.png";
 
 const letters = ["P", "R", "I", "M", "E"];
 
-function Navbar( { cartCount, openCart } ) {
+function Navbar({ cartCount, openCart }) {
   return (
     <nav className="fixed top-0 left-0 w-full z-30 bg-[#fefefc]">
 
       <div className="w-full px-10 py-2 flex items-center">
 
-        {/* LOGO */}
-        <Link to="/" className="flex items-center gap-2">
+        {/* LOGO + LETRAS (BRINCO AL HACER HOVER EN EL GRUPO) */}
+        <Link 
+          to="/" 
+          className="flex items-center gap-2 group cursor-pointer transition-transform duration-300 ease-out hover:-translate-y-1"
+        >
 
           <img
             src={logo}
@@ -68,8 +71,12 @@ function Navbar( { cartCount, openCart } ) {
               tracking-[0.3em]
               text-black
               hover:text-gray-600
-              transition
+              transition-all
+              duration-300
+              ease-out
+              hover:-translate-y-1
               cursor-pointer
+              inline-block
             "
           >
             SHOP
@@ -84,7 +91,11 @@ function Navbar( { cartCount, openCart } ) {
                 tracking-[0.3em]
                 text-black
                 hover:text-gray-600
-                transition
+                transition-all
+                duration-300
+                ease-out
+                hover:-translate-y-1
+                cursor-pointer
               "
             >
               ABOUT
@@ -134,19 +145,33 @@ function Navbar( { cartCount, openCart } ) {
 
           {/* LOGIN */}
           <button
-            className="hover:text-gray-600 transition"
+            className="
+              hover:text-gray-600 
+              transition-all 
+              duration-300 
+              ease-out 
+              hover:-translate-y-1 
+              cursor-pointer 
+              p-1
+            "
             aria-label="Iniciar Sesión"
           >
             <User size={22} strokeWidth={1.8} />
           </button>
 
-         {/* CARRITO */}
+          {/* CARRITO */}
           <button
             onClick={openCart}
             className="
               relative
               hover:text-gray-600
-              transition
+              transition-all
+              duration-300
+              ease-out
+              hover:-translate-y-1.5
+              active:-translate-y-0.5
+              cursor-pointer
+              p-1
             "
             aria-label="Carrito"
           >

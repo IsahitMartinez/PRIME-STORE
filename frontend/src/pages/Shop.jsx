@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/NavBar";
-import { supabase } from "../lib/supabase"; // Importamos la conexión que creamos
+import Navbar from "../components/Navbar";
+import ProductDetailModal from "../components/ProductDetailModal";
+import { supabase } from "../lib/supabase";
 
 function Shop({ addToCart, cartCount, openCart }) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [hoveredId, setHoveredId] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
-    // Función para obtener los productos de Supabase
     useEffect(() => {
         async function fetchProducts() {
             try {
@@ -44,33 +46,68 @@ function Shop({ addToCart, cartCount, openCart }) {
                 Explora y adquiere comodidad con estilo
             </p> 
 
-            {/* Mensaje mientras carga de la base de datos */}
             {loading ? (
                 <div className="text-center mt-20 text-2xl text-gray-400">Cargando catálogo deportivo...</div>
             ) : products.length === 0 ? (
-                <div className="text-center mt-20 text-xl text-gray-500">No hay productos disponibles por el momento. ¡Actualiza tu inventario en Supabase!</div>
+                <div className="text-center mt-20 text-xl text-gray-500">No hay productos disponibles por el momento.</div>
             ) : (
                 <div className="grid grid-cols-3 gap-10 mt-10">
-                    {products.map((product) => (
-                        <div key={product.id} className="bg-white p-4 shadow-md rounded-3xl">
-                            <img 
-                                src={product.image_url} 
-                                alt={product.name} 
-                                className="w-full h-80 object-cover rounded-3xl mb-5" 
-                            />
-                            <h2 className="text-xl font-bold">{product.name}</h2>
-                            <p className="text-lg text-green-500">{product.price} $</p>
-                            <p className="text-sm text-gray-500">{product.categoria || product.category}</p>
+                    {products.map((product) => {
+                        const isHovered = hoveredId === product.id;
 
-                            <button 
-                                onClick={() => addToCart(product)}
-                                className="mt-5 w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition"
+                        return (
+                            <div 
+                                key={product.id} 
+                                onMouseEnter={() => setHoveredId(product.id)}
+                                onMouseLeave={() => setHoveredId(null)}
+                                onClick={() => setSelectedProduct(product)}
+                                style={{
+                                    transform: isHovered ? "translateY(-10px)" : "translateY(0px)",
+                                    boxShadow: isHovered ? "0 20px 40px -15px rgba(0,0,0,0.12)" : "0 4px 6px -1px rgba(0,0,0,0.05)",
+                                    transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+                                }}
+                                className="bg-white p-4 rounded-3xl cursor-pointer"
                             >
-                                AGREGAR AL CARRITO
-                            </button>
-                        </div>
-                    ))}
+                                <div className="w-full h-80 rounded-3xl overflow-hidden mb-5">
+                                    <img 
+                                        src={product.image_url} 
+                                        alt={product.name} 
+                                        className="w-full h-full object-cover transition-transform duration-500 ease-out hover:scale-105" 
+                                    />
+                                </div>
+                                <h2 className="text-xl font-bold">{product.name}</h2>
+                                <p className="text-lg text-green-500">{product.price} $</p>
+                                <p className="text-sm text-gray-500">{product.categoria || product.category}</p>
+
+                                <button 
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        addToCart(product);
+                                    }}
+                                    className="
+                                        mt-5 w-full bg-black text-white py-3 rounded-full cursor-pointer 
+                                        transition-all duration-300 ease-out
+                                        hover:shadow-[0_0_25px_rgba(0,0,0,0.35)]
+                                        hover:scale-[1.02]
+                                        border border-transparent
+                                    "
+                                >
+                                    AGREGAR AL CARRITO
+                                </button>
+                            </div>
+                        );
+                    })}
                 </div>
+            )}
+
+            {/* RENDERIZADO CONDICIONAL PROTEGIDO */}
+            {selectedProduct && (
+                <ProductDetailModal
+                    product={selectedProduct}
+                    onClose={() => setSelectedProduct(null)}
+                    addToCart={addToCart}
+                />
             )}
         </div>
     );
