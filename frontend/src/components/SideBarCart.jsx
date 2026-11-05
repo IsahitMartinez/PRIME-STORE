@@ -157,7 +157,7 @@ function SideBarCart({
               className="
                 w-full bg-black text-white py-4 rounded-full font-bold cursor-pointer text-center 
                 transition-all duration-300 ease-out
-                hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)]
+                hover:bg-green-600 hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)]
                 hover:-translate-y-1 active:-translate-y-0.5
               "
             >

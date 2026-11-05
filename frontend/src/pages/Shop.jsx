@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import ProductDetailModal from "../components/ProductDetailModal";
+import ToastNotification from "../components/ToastNotification";
 import { supabase } from "../lib/supabase";
 
 function Shop({ addToCart, cartCount, openCart }) {
@@ -9,8 +10,12 @@ function Shop({ addToCart, cartCount, openCart }) {
   const [hoveredId, setHoveredId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // Estado para la categoría activa
+  // Filtros por categoría
   const [selectedCategory, setSelectedCategory] = useState("TODOS");
+
+  // Estado del Toast Notification
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -31,7 +36,21 @@ function Shop({ addToCart, cartCount, openCart }) {
     fetchProducts();
   }, []);
 
-  // Lista dinámica de categorías únicas desde Supabase
+  const triggerToast = (productName) => {
+    setToastMessage(`¡${productName} añadido al carrito!`);
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 2500);
+  };
+
+  const handleAddToCart = (product, e) => {
+    if (e) e.stopPropagation();
+    addToCart(product);
+    triggerToast(product.name);
+  };
+
+  // Categorías dinámicas
   const categories = [
     "TODOS",
     ...new Set(
@@ -41,7 +60,6 @@ function Shop({ addToCart, cartCount, openCart }) {
     ),
   ];
 
-  // Filtrado de productos en tiempo real
   const filteredProducts =
     selectedCategory === "TODOS"
       ? products
@@ -51,8 +69,11 @@ function Shop({ addToCart, cartCount, openCart }) {
         );
 
   return (
-    <div className="min-h-screen bg-[#fefefc] p-20">
+    <div className="min-h-screen bg-[#fefefc] p-8">
       <Navbar cartCount={cartCount} openCart={openCart} />
+
+      {/* NOTIFICACIÓN TOAST */}
+      <ToastNotification message={toastMessage} isVisible={showToast} />
 
       <h1
         className="text-7xl text-black mt-10"
@@ -67,7 +88,7 @@ function Shop({ addToCart, cartCount, openCart }) {
 
       {/* FILTROS POR CATEGORÍA */}
       {!loading && products.length > 0 && (
-        <div className="flex flex-wrap gap-4 mt-8">
+        <div className="flex flex-wrap gap-4 mt-4">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -90,9 +111,21 @@ function Shop({ addToCart, cartCount, openCart }) {
         </div>
       )}
 
+      {/* RENDERIZADO: SKELETON LOADERS O PRODUCTOS */}
       {loading ? (
-        <div className="text-center mt-20 text-2xl text-gray-400">
-          Cargando catálogo deportivo...
+        <div className="grid grid-cols-3 gap-10 mt-10">
+          {[1, 2, 3, 4, 5, 6].map((n) => (
+            <div
+              key={n}
+              className="bg-white p-4 rounded-3xl animate-pulse shadow-sm"
+            >
+              <div className="w-full h-80 rounded-3xl bg-gray-200 mb-5"></div>
+              <div className="h-6 bg-gray-200 rounded-md w-3/4 mb-3"></div>
+              <div className="h-5 bg-gray-200 rounded-md w-1/4 mb-3"></div>
+              <div className="h-4 bg-gray-100 rounded-md w-1/3 mb-5"></div>
+              <div className="h-12 bg-gray-200 rounded-full w-full"></div>
+            </div>
+          ))}
         </div>
       ) : filteredProducts.length === 0 ? (
         <div className="text-center mt-20 text-xl text-gray-500">
@@ -102,6 +135,7 @@ function Shop({ addToCart, cartCount, openCart }) {
         <div className="grid grid-cols-3 gap-10 mt-10">
           {filteredProducts.map((product) => {
             const isHovered = hoveredId === product.id;
+            const isOutStock = product.stock !== undefined && product.stock <= 0;
 
             return (
               <div
@@ -117,36 +151,45 @@ function Shop({ addToCart, cartCount, openCart }) {
                   transition:
                     "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                 }}
-                className="bg-white p-4 rounded-3xl cursor-pointer"
+                className="bg-white p-4 rounded-3xl cursor-pointer relative"
               >
-                <div className="w-full h-80 rounded-3xl overflow-hidden mb-5">
+                {/* ETIQUETA AGOTADO / STOCK */}
+                {isOutStock && (
+                  <span className="absolute top-7 left-7 z-10 bg-red-500 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase shadow-md">
+                    AGOTADO
+                  </span>
+                )}
+
+                <div className="w-full h-80 rounded-3xl overflow-hidden mb-5 relative">
                   <img
                     src={product.image_url}
                     alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-500 ease-out hover:scale-105"
+                    className={`w-full h-full object-cover transition-transform duration-500 ease-out hover:scale-105 ${
+                      isOutStock ? "grayscale opacity-75" : ""
+                    }`}
                   />
                 </div>
+
                 <h2 className="text-xl font-bold">{product.name}</h2>
-                <p className="text-lg text-green-500">{product.price} $</p>
+                <p className="text-lg text-green-500 font-semibold">{product.price} $</p>
                 <p className="text-sm text-gray-500">
                   {product.categoria || product.category}
                 </p>
 
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    addToCart(product);
-                  }}
-                  className="
-                    mt-5 w-full bg-black text-white py-3 rounded-full cursor-pointer 
-                    transition-all duration-300 ease-out
-                    hover:shadow-[0_0_25px_rgba(0,0,0,0.35)]
-                    hover:scale-[1.02]
-                    border border-transparent
-                  "
+                  disabled={isOutStock}
+                  onClick={(e) => handleAddToCart(product, e)}
+                  className={`
+                    mt-5 w-full py-3 rounded-full font-bold transition-all duration-300 ease-out border border-transparent
+                    ${
+                      isOutStock
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-black text-white cursor-pointer hover:shadow-[0_0_25px_rgba(0,0,0,0.35)] hover:scale-[1.02]"
+                    }
+                  `}
                 >
-                  AGREGAR AL CARRITO
+                  {isOutStock ? "AGOTADO" : "AGREGAR AL CARRITO"}
                 </button>
               </div>
             );
@@ -159,7 +202,10 @@ function Shop({ addToCart, cartCount, openCart }) {
         <ProductDetailModal
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
-          addToCart={addToCart}
+          addToCart={(prod) => {
+            addToCart(prod);
+            triggerToast(prod.name);
+          }}
         />
       )}
     </div>
