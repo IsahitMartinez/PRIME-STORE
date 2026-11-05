@@ -7,42 +7,64 @@ import SideBarCart from "./components/SideBarCart";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
-  const [cartItems, setCartItems] = useState([]);
+
+  // 1. Cargar desde localStorage al iniciar
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem("prime_cart");
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Error al cargar el carrito:", error);
+      return [];
+    }
+  });
+
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 3200);
-
     return () => clearTimeout(timer);
   }, []);
 
-  // Agregar producto agrupando por ID
+  // 2. Guardar en localStorage cada vez que cambie 'cartItems'
+  useEffect(() => {
+    try {
+      localStorage.setItem("prime_cart", JSON.stringify(cartItems));
+    } catch (error) {
+      console.error("Error al guardar en localStorage:", error);
+    }
+  }, [cartItems]);
+
+  // Agregar producto agrupando por ID y Talla
   function addToCart(product) {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => String(item.id) === String(product.id));
+      const sizeKey = product.selectedSize || "M";
+      const existingItem = prevItems.find(
+        (item) => String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
+      );
+
       if (existingItem) {
         return prevItems.map((item) =>
-          String(item.id) === String(product.id)
+          String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
             ? { ...item, cantidad: (parseInt(item.cantidad) || 1) + 1 }
             : item
         );
       }
-      return [...prevItems, { ...product, cantidad: 1 }];
+      return [...prevItems, { ...product, cantidad: 1, selectedSize: sizeKey }];
     });
 
     setIsCartOpen(true);
   }
 
-  // Sumar (+1) o Restar (-1) con conversión segura de ID
+  // Modificar cantidad (+1 / -1)
   function updateQuantity(productId, delta) {
     setCartItems((prevItems) =>
       prevItems.map((item) => {
         if (String(item.id) === String(productId)) {
           const currentQty = parseInt(item.cantidad) || 1;
           const newQty = currentQty + delta;
-          // Evitamos que baje de 1 al presionar "-" (para borrar se usa el botón Eliminar)
           return { ...item, cantidad: newQty > 0 ? newQty : 1 };
         }
         return item;
@@ -50,7 +72,7 @@ function App() {
     );
   }
 
-  // Escribir un número directo en el input
+  // Asignar cantidad directa desde el input
   function setQuantityDirect(productId, newQty) {
     const parsedQty = parseInt(newQty);
     if (isNaN(parsedQty) || parsedQty < 1) return;
@@ -71,7 +93,7 @@ function App() {
     );
   }
 
-  // Total de piezas para el badge
+  // Total de unidades para la insignia
   const totalCartCount = cartItems.reduce(
     (acc, item) => acc + (parseInt(item.cantidad) || 1),
     0
