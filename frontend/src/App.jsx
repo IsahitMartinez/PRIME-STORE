@@ -38,34 +38,41 @@ function App() {
   }, [cartItems]);
 
   // Agregar producto agrupando por ID y Talla + Validación de Stock
-  function addToCart(product) {
-  const sizeKey = product.selectedSize || "M";
-  const existingItem = cartItems.find(
-    (item) => String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
-  );
+   function addToCart(product) {
+    const sizeKey = product.selectedSize || "Unitalla";
+    const colorKey = product.selectedColor || "Único";
 
-  const currentQtyInCart = existingItem ? parseInt(existingItem.cantidad) || 1 : 0;
-  const maxStock = product.stock !== undefined ? product.stock : 999;
+    // Busca si ya existe exactamente el mismo producto, en la misma talla y en EL MISMO COLOR
+    const existingItem = cartItems.find(
+      (item) => 
+        String(item.id) === String(product.id) && 
+        (item.selectedSize || "Unitalla") === sizeKey &&
+        (item.selectedColor || "Único") === colorKey
+    );
 
-  // Si supera el stock, simplemente abrimos el carrito sin mostrar un alert nativo del navegador
-  if (currentQtyInCart + 1 > maxStock) {
-    setIsCartOpen(true);
-    return;
-  }
+    const currentQtyInCart = existingItem ? parseInt(existingItem.cantidad) || 1 : 0;
+    const maxStock = product.stock !== undefined ? product.stock : 999;
 
-  setCartItems((prevItems) => {
-    if (existingItem) {
-      return prevItems.map((item) =>
-        String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
-          ? { ...item, cantidad: currentQtyInCart + 1 }
-          : item
-      );
+    if (currentQtyInCart + 1 > maxStock) {
+      // El límite se maneja silenciosamente aquí, o el usuario lo verá en el carrito
+      return;
     }
-    return [...prevItems, { ...product, cantidad: 1, selectedSize: sizeKey }];
-  });
 
-  setIsCartOpen(true);
-}
+    setCartItems((prevItems) => {
+      if (existingItem) {
+        return prevItems.map((item) =>
+          String(item.id) === String(product.id) && 
+          (item.selectedSize || "Unitalla") === sizeKey &&
+          (item.selectedColor || "Único") === colorKey
+            ? { ...item, cantidad: currentQtyInCart + 1 }
+            : item
+        );
+      }
+      return [...prevItems, { ...product, cantidad: 1, selectedSize: sizeKey, selectedColor: colorKey }];
+    });
+
+    // ¡ELIMINAMOS setIsCartOpen(true) PARA QUE YA NO SE ABRA AUTOMÁTICAMENTE!
+  }
 
   // Modificar cantidad (+1 / -1)
   function updateQuantity(productId, delta) {

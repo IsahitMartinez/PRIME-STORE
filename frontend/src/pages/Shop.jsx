@@ -187,7 +187,11 @@ function Shop({ addToCart, cartCount, openCart }) {
                 <button
                   type="button"
                   disabled={isOutStock}
-                  onClick={(e) => handleAddToCart(product, e)}
+                  // En lugar de handleAddToCart, abrimos el modal asignando el producto seleccionado
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedProduct(product);
+                  }}
                   className={`
                     mt-5 w-full py-3 rounded-full font-bold transition-all duration-300 ease-out border border-transparent
                     ${
@@ -197,7 +201,7 @@ function Shop({ addToCart, cartCount, openCart }) {
                     }
                   `}
                 >
-                  {isOutStock ? "AGOTADO" : "AGREGAR AL CARRITO"}
+                  {isOutStock ? "AGOTADO" : "ELEGIR COLOR"}
                 </button>
               </div>
             );
