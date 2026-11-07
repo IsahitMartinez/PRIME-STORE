@@ -6,45 +6,28 @@ import logo from "../assets/ONLYFIGURE.png";
 
 const letters = ["P", "R", "I", "M", "E"];
 
-function Navbar({ cartCount, openCart }) {
+function Navbar({ cartCount, openCart, openNewsletter }) {
   return (
     <nav className="fixed top-0 left-0 w-full z-30 bg-[#fefefc]">
-
       <div className="w-full px-10 py-2 flex items-center">
-
         {/* LOGO + LETRAS (BRINCO AL HACER HOVER EN EL GRUPO) */}
         <Link 
           to="/" 
           className="flex items-center gap-2 group cursor-pointer transition-transform duration-300 ease-out hover:-translate-y-1"
         >
-
           <img
             src={logo}
             alt="Prime Logo"
             className="w-14"
           />
-
           <div className="flex mr-32">
-
             {letters.map((letter, index) => (
-
               <motion.span
                 key={index}
                 className="text-4xl tracking-wide text-black"
                 style={{ fontFamily: "Bebas Neue" }}
-
-                initial={{
-                  opacity: 0,
-                  y: 10,
-                  scale: 0.5,
-                }}
-
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                }}
-
+                initial={{ opacity: 0, y: 10, scale: 0.5 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{
                   delay: index * 0.12,
                   duration: 0.7,
@@ -53,108 +36,39 @@ function Navbar({ cartCount, openCart }) {
               >
                 {letter}
               </motion.span>
-
             ))}
-
           </div>
-
         </Link>
 
         {/* NAVBAR DERECHA */}
         <div className="ml-auto flex items-center gap-10">
-
-          {/* SHOP */}
-          <Link
-            to="/shop"
-            className="
-              text-sm
-              tracking-[0.3em]
-              text-black
-              hover:text-gray-600
-              transition-all
-              duration-300
-              ease-out
-              hover:-translate-y-1
-              cursor-pointer
-              inline-block
-            "
-          >
-            SHOP
-          </Link>
-
           {/* ABOUT */}
           <div className="relative group">
-
             <button
-              className="
-                text-sm
-                tracking-[0.3em]
-                text-black
-                hover:text-gray-600
-                transition-all
-                duration-300
-                ease-out
-                hover:-translate-y-1
-                cursor-pointer
-              "
+              className="text-sm tracking-[0.3em] text-black hover:text-gray-600 transition-all duration-300 ease-out hover:-translate-y-1 cursor-pointer"
             >
               ABOUT
             </button>
 
             {/* DROPDOWN */}
-            <div
-              className="
-                absolute
-                right-0
-                top-8
-                w-72
-                bg-[#fefefc]
-                border
-                border-gray-200
-                rounded-3xl
-                p-5
-                shadow-lg
-                opacity-0
-                invisible
-                group-hover:opacity-100
-                group-hover:visible
-                transition-all
-                duration-300
-              "
-            >
-
-              <h3
-                className="text-3xl text-black mb-2"
-                style={{ fontFamily: "Bebas Neue" }}
-              >
+            <div className="absolute right-0 top-8 w-72 bg-[#fefefc] border border-gray-200 rounded-3xl p-5 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+              <h3 className="text-3xl text-black mb-2" style={{ fontFamily: "Bebas Neue" }}>
                 PRIME
               </h3>
-
               <p className="text-sm text-gray-600 leading-relaxed">
-                Tienda de ropa deportiva premium diseñada para entrenar
-                con comodidad, estilo y presencia.
+                Tienda de ropa deportiva premium diseñada para entrenar con comodidad, estilo y presencia.
               </p>
-
               <p className="text-sm text-black mt-4 font-medium">
                 Contacto: 314 142 5761
               </p>
-
             </div>
-
           </div>
 
-          {/* LOGIN */}
+          {/* ICONO USUARIO / NEWSLETTER */}
           <button
-            className="
-              hover:text-gray-600 
-              transition-all 
-              duration-300 
-              ease-out 
-              hover:-translate-y-1 
-              cursor-pointer 
-              p-1
-            "
-            aria-label="Iniciar Sesión"
+            onClick={openNewsletter}
+            className="hover:text-gray-600 transition-all duration-300 ease-out hover:-translate-y-1 cursor-pointer p-1"
+            aria-label="Notificaciones"
           >
             <User size={22} strokeWidth={1.8} />
           </button>
@@ -162,49 +76,16 @@ function Navbar({ cartCount, openCart }) {
           {/* CARRITO */}
           <button
             onClick={openCart}
-            className="
-              relative
-              hover:text-gray-600
-              transition-all
-              duration-300
-              ease-out
-              hover:-translate-y-1.5
-              active:-translate-y-0.5
-              cursor-pointer
-              p-1
-            "
+            className="relative hover:text-gray-600 transition-all duration-300 ease-out hover:-translate-y-1.5 active:-translate-y-0.5 cursor-pointer p-1"
             aria-label="Carrito"
           >
-            <ShoppingBag
-              size={22}
-              strokeWidth={1.8}
-            />
-
-            <span
-              className="
-                absolute
-                -top-2
-                -right-2
-                bg-black
-                text-white
-                text-xs
-                rounded-full
-                w-5
-                h-5
-                flex
-                items-center
-                justify-center
-              "
-            >
+            <ShoppingBag size={22} strokeWidth={1.8} />
+            <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {cartCount}
             </span>
-
           </button>
-
         </div>
-
       </div>
-
     </nav>
   );
 }

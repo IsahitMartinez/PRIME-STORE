@@ -4,7 +4,7 @@ import ProductDetailModal from "../components/ProductDetailModal";
 import ToastNotification from "../components/ToastNotification";
 import { supabase } from "../lib/supabase";
 
-function Shop({ addToCart, cartCount, openCart }) {
+function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hoveredId, setHoveredId] = useState(null);
@@ -70,7 +70,8 @@ function Shop({ addToCart, cartCount, openCart }) {
 
   return (
     <div className="min-h-screen bg-[#fefefc] p-8">
-      <Navbar cartCount={cartCount} openCart={openCart} />
+      {/* Pasamos openNewsletter al Navbar */}
+      <Navbar cartCount={cartCount} openCart={openCart} openNewsletter={openNewsletter} />
 
       {/* NOTIFICACIÓN TOAST */}
       <ToastNotification message={toastMessage} isVisible={showToast} />
@@ -187,7 +188,10 @@ function Shop({ addToCart, cartCount, openCart }) {
                 <button
                   type="button"
                   disabled={isOutStock}
-                  onClick={(e) => handleAddToCart(product, e)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedProduct(product);
+                  }}
                   className={`
                     mt-5 w-full py-3 rounded-full font-bold transition-all duration-300 ease-out border border-transparent
                     ${
@@ -197,7 +201,7 @@ function Shop({ addToCart, cartCount, openCart }) {
                     }
                   `}
                 >
-                  {isOutStock ? "AGOTADO" : "AGREGAR AL CARRITO"}
+                  {isOutStock ? "AGOTADO" : "ELEGIR COLOR"}
                 </button>
               </div>
             );

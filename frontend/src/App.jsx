@@ -4,6 +4,7 @@ import SplashScreen from "./components/SplashScreen";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import SideBarCart from "./components/SideBarCart";
+import NewsletterModal from "./components/NewsletterModal"; // Importamos el nuevo modal
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -20,6 +21,9 @@ function App() {
   });
 
   const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  // ESTADO PARA EL MODAL DE CORREO
+  const [isNewsletterOpen, setIsNewsletterOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -37,35 +41,38 @@ function App() {
     }
   }, [cartItems]);
 
-  // Agregar producto agrupando por ID y Talla + Validación de Stock
   function addToCart(product) {
-  const sizeKey = product.selectedSize || "M";
-  const existingItem = cartItems.find(
-    (item) => String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
-  );
+    const sizeKey = product.selectedSize || "Unitalla";
+    const colorKey = product.selectedColor || "Único";
 
-  const currentQtyInCart = existingItem ? parseInt(existingItem.cantidad) || 1 : 0;
-  const maxStock = product.stock !== undefined ? product.stock : 999;
+    // Busca si ya existe exactamente el mismo producto, en la misma talla y en EL MISMO COLOR
+    const existingItem = cartItems.find(
+      (item) => 
+        String(item.id) === String(product.id) && 
+        (item.selectedSize || "Unitalla") === sizeKey &&
+        (item.selectedColor || "Único") === colorKey
+    );
 
-  // Si supera el stock, simplemente abrimos el carrito sin mostrar un alert nativo del navegador
-  if (currentQtyInCart + 1 > maxStock) {
-    setIsCartOpen(true);
-    return;
-  }
+    const currentQtyInCart = existingItem ? parseInt(existingItem.cantidad) || 1 : 0;
+    const maxStock = product.stock !== undefined ? product.stock : 999;
 
-  setCartItems((prevItems) => {
-    if (existingItem) {
-      return prevItems.map((item) =>
-        String(item.id) === String(product.id) && (item.selectedSize || "M") === sizeKey
-          ? { ...item, cantidad: currentQtyInCart + 1 }
-          : item
-      );
+    if (currentQtyInCart + 1 > maxStock) {
+      return;
     }
-    return [...prevItems, { ...product, cantidad: 1, selectedSize: sizeKey }];
-  });
 
-  setIsCartOpen(true);
-}
+    setCartItems((prevItems) => {
+      if (existingItem) {
+        return prevItems.map((item) =>
+          String(item.id) === String(product.id) && 
+          (item.selectedSize || "Unitalla") === sizeKey &&
+          (item.selectedColor || "Único") === colorKey
+            ? { ...item, cantidad: currentQtyInCart + 1 }
+            : item
+        );
+      }
+      return [...prevItems, { ...product, cantidad: 1, selectedSize: sizeKey, selectedColor: colorKey }];
+    });
+  }
 
   // Modificar cantidad (+1 / -1)
   function updateQuantity(productId, delta) {
@@ -120,6 +127,13 @@ function App() {
 
   return (
     <Router>
+      {/* EL MODAL DE NOTIFICACIONES */}
+      <NewsletterModal 
+        isOpen={isNewsletterOpen} 
+        onClose={() => setIsNewsletterOpen(false)} 
+        onContinue={() => setIsNewsletterOpen(false)} 
+      />
+
       <SideBarCart
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -130,7 +144,11 @@ function App() {
       />
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        {/* Pasamos la función openNewsletter a Home y a Shop */}
+        <Route 
+          path="/" 
+          element={<Home openNewsletter={() => setIsNewsletterOpen(true)} />} 
+        />
         <Route
           path="/shop"
           element={
@@ -139,6 +157,7 @@ function App() {
               cartCount={totalCartCount}
               openCart={() => setIsCartOpen(true)}
               removeFromCart={removeFromCart}
+              openNewsletter={() => setIsNewsletterOpen(true)}
             />
           }
         />

@@ -1,15 +1,22 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import ImagesCarousel from "../components/ImagesCarousel";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function Home() {
+function Home({ openNewsletter }) {
   // Estado para detectar si el mouse está encima del carrusel
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+
+  const handleComprarAhora = () => {
+    navigate("/shop"); // Te lleva a la tienda
+    openNewsletter();  // Abre el modal por encima
+  };
 
   return (
     <div className="min-h-screen bg-[#fefefc]">
-      <Navbar />
+      {/* Pasamos la función al Navbar para que el icono del usuario funcione aquí también */}
+      <Navbar openNewsletter={openNewsletter} />
 
       <section
         className="h-screen flex items-center justify-between px-24 gap-20"
@@ -32,13 +39,12 @@ function Home() {
             al mejor precio, no lo pienses 2 veces.
           </p>
 
-          <Link to="/shop">
-            <button
-              className="mt-10 px-10 py-4 bg-black text-white rounded-full hover:bg-gray-800 transition cursor-pointer hover:-translate-y-1 shadow-lg"
-            >
-              COMPRAR AHORA
-            </button>
-          </Link>
+          <button
+            onClick={handleComprarAhora}
+            className="mt-10 px-10 py-4 bg-black text-white rounded-full hover:bg-gray-800 transition cursor-pointer hover:-translate-y-1 shadow-lg"
+          >
+            COMPRAR AHORA
+          </button>
         </div>
 
         {/* COLUMNA DERECHA (EL CARRUSEL) */}
@@ -46,10 +52,9 @@ function Home() {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           style={{
-            // Aquí inyectamos el CSS puro dependiendo del estado de React
             transform: isHovered ? "translateY(-16px)" : "translateY(0px)",
             boxShadow: isHovered ? "0 25px 50px -12px rgba(0,0,0,0.3)" : "none",
-            transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)" // Efecto resorte en CSS
+            transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
           }}
           className="
             w-[550px]

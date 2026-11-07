@@ -17,19 +17,24 @@ function SideBarCart({
   const triggerToast = (msg) => {
     setToastMessage(msg);
     setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 2800);
+    setTimeout(() => setShowToast(false), 2800);
   };
 
-  // Cálculo del total
-  const totalAmount = cartItems.reduce((acc, item) => {
+  // CÁLCULOS DE CANTIDAD, SUBTOTAL Y DESCUENTO
+  const totalItems = cartItems.reduce((acc, item) => acc + (parseInt(item.cantidad) || 1), 0);
+  
+  const subtotalAmount = cartItems.reduce((acc, item) => {
     const price = parseFloat(item.price) || 0;
     const qty = parseInt(item.cantidad) || 1;
     return acc + (price * qty);
   }, 0);
 
-  // checkout por WhatsApp
+  // Aplica 10% de descuento si hay 3 o más artículos en total
+  const hasDiscount = totalItems >= 4;
+  const discountAmount = hasDiscount ? subtotalAmount * 0.10 : 0;
+  const totalAmount = subtotalAmount - discountAmount;
+
+  // Checkout por WhatsApp
   const handleWhatsAppCheckout = () => {
     if (cartItems.length === 0) return;
 
@@ -40,15 +45,23 @@ function SideBarCart({
 
     cartItems.forEach((item, index) => {
       const qty = parseInt(item.cantidad) || 1;
-      const size = item.selectedSize || "M";
+      const size = item.selectedSize || "Unitalla";
+      const color = item.selectedColor || "Único";
       const price = parseFloat(item.price) || 0;
-      const subtotal = price * qty;
+      const sub = price * qty;
 
       message += `${index + 1}. *${item.name}*\n`;
-      message += `   • Talla: ${size}\n`;
+      message += `   • Color: ${color}\n`;
+      if (size !== "Unitalla") message += `   • Talla: ${size}\n`;
       message += `   • Cantidad: ${qty}\n`;
-      message += `   • Subtotal: $${subtotal.toFixed(2)} MXN\n\n`;
+      message += `   • Importe: $${sub.toFixed(2)} MXN\n\n`;
     });
+
+    // Agregar desglose de descuento si aplica
+    if (hasDiscount) {
+      message += `   *Subtotal:* $${subtotalAmount.toFixed(2)} MXN\n`;
+      message += `   *Descuento (10% por 4+ prendas):* -$${discountAmount.toFixed(2)} MXN\n\n`;
+    }
 
     message += `*TOTAL A PAGAR: $${totalAmount.toFixed(2)} MXN*\n\n`;
     message += `Quedo a la espera de los datos para realizar el pago y acordar la entrega. ¡Muchas gracias!`;
@@ -61,7 +74,6 @@ function SideBarCart({
 
   return (
     <>
-      {/* TOAST FLOTANTE PARA AVISOS DE STOCK */}
       <ToastNotification message={toastMessage} isVisible={showToast} />
 
       <div 
@@ -91,11 +103,11 @@ function SideBarCart({
             ) : (
               cartItems.map((item) => {
                 const currentQty = parseInt(item.cantidad) || 1;
+                const showSize = item.selectedSize && item.selectedSize !== "Unitalla";
 
                 return (
-                  <div key={`${item.id}-${item.selectedSize || 'M'}`} className="flex items-center justify-between border-b border-gray-100 pb-4">
+                  <div key={`${item.id}-${item.selectedColor}-${item.selectedSize}`} className="flex items-center justify-between border-b border-gray-100 pb-4">
                     
-                    {/* Foto e Info */}
                     <div className="flex items-center gap-4">
                       <img 
                         src={item.image_url} 
@@ -103,17 +115,19 @@ function SideBarCart({
                         className="w-16 h-16 object-cover rounded-xl shrink-0 shadow-sm"
                       />
                       <div>
-                        <h3 className="font-bold text-sm text-gray-800">{item.name}</h3>
-                        <p className="text-xs text-gray-500 font-semibold">Talla: <span className="text-black">{item.selectedSize || "M"}</span></p>
-                        <p className="text-green-600 font-semibold text-sm">{item.price} $</p>
+                        <h3 className="font-bold text-sm text-gray-800 leading-tight">{item.name}</h3>
+                        <p className="text-xs text-gray-500 font-semibold mt-1">
+                          Color: <span className="text-black">{item.selectedColor || "Único"}</span> 
+                          {showSize && (
+                            <> | Talla: <span className="text-black">{item.selectedSize}</span></>
+                          )}
+                        </p>
+                        <p className="text-green-600 font-semibold text-sm mt-1">${item.price} MXN</p>
                       </div>
                     </div>
 
-                    {/* Controles (+ / Input / -) y Eliminar */}
-                    <div className="flex flex-col items-end gap-2">
+                    <div className="flex flex-col items-end gap-2 shrink-0">
                       <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg p-1">
-                        
-                        {/* RESTAR (-) */}
                         <button 
                           type="button"
                           onClick={() => updateQuantity(item.id, -1)}
@@ -122,7 +136,6 @@ function SideBarCart({
                           -
                         </button>
                         
-                        {/* Input Directo */}
                         <input 
                           type="number" 
                           value={currentQty}
@@ -131,7 +144,6 @@ function SideBarCart({
                           min="1"
                         />
 
-                        {/* SUMAR (+) CON TOAST DISCRETO */}
                         <button 
                           type="button"
                           onClick={() => {
@@ -147,7 +159,6 @@ function SideBarCart({
                         </button>
                       </div>
 
-                      {/* Eliminar */}
                       <button 
                         type="button"
                         onClick={() => removeFromCart(item.id)}
@@ -163,10 +174,25 @@ function SideBarCart({
             )}
           </div>
 
-          {/* Total y Finalizar Pedido */}
+          {/* Resumen y Finalizar Pedido */}
           {cartItems.length > 0 && (
-            <div className="border-t pt-4 mt-auto">
-              <div className="flex justify-between items-center text-xl font-bold mb-4">
+            <div className="border-t border-gray-200 pt-4 mt-auto">
+              
+              {/* Desglose de Descuento UI */}
+              {hasDiscount && (
+                <>
+                  <div className="flex justify-between items-center text-sm font-semibold text-gray-400 mb-1 line-through">
+                    <span>Subtotal:</span>
+                    <span>${subtotalAmount.toFixed(2)} MXN</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm font-bold text-green-500 mb-3">
+                    <span>Descuento (10% por 4+ piezas):</span>
+                    <span>-${discountAmount.toFixed(2)} MXN</span>
+                  </div>
+                </>
+              )}
+
+              <div className="flex justify-between items-center text-2xl font-bold mb-5">
                 <span>Total:</span>
                 <span className="text-green-600">${totalAmount.toFixed(2)} MXN</span>
               </div>
