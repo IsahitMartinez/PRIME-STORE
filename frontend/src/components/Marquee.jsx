@@ -1,28 +1,29 @@
 // ✏️ EDITA AQUÍ: las frases que se repiten en la cinta
 const ITEMS = [
-  "Viste y entrena",
-  "Calidad premium",
-  "Pedidos directos",
-  "Streetwear deportivo",
+  "VISTE Y ENTRENA PREMIUM",
+  "STREETWEAR DEPORTIVO",
+  "EXCLUSIVIDAD EN CADA DROP",
+  "RENDIMIENTO Y PRESENCIA",
+  "CALIDAD SUPERIOR",
+  "ESTILO SIN LÍMITES",
 ];
 
 function Marquee() {
-  // Duplicamos la lista: cuando la primera mitad sale de pantalla,
-  // la segunda ocupa su lugar y el loop no se nota.
-  const loop = [...ITEMS, ...ITEMS];
+  // Cuadruplicamos la lista para que el loop nunca se rompa, 
+  // ni siquiera en monitores ultra anchos o pantallas 4K.
+  const loop = [...ITEMS, ...ITEMS, ...ITEMS, ...ITEMS];
 
   return (
     <div
-      className="prime-marquee overflow-hidden border-y border-black bg-[#fefefc] py-4"
+      className="prime-marquee overflow-hidden border-y border-black bg-white py-6 shadow-md"
       aria-hidden="true"
     >
-      {/* Estilos propios de este componente (nombres con "prime-" para no chocar con nada) */}
       <style>{`
         @keyframes prime-marquee {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
         }
-        .prime-marquee-track { animation: prime-marquee 30s linear infinite; }
+        .prime-marquee-track { animation: prime-marquee 40s linear infinite; }
         .prime-marquee:hover .prime-marquee-track { animation-play-state: paused; }
         @media (prefers-reduced-motion: reduce) {
           .prime-marquee-track { animation: none; }
@@ -31,15 +32,13 @@ function Marquee() {
 
       <div className="prime-marquee-track flex w-max items-center whitespace-nowrap">
         {loop.map((item, i) => (
-          // pr-10 (y no "gap") para que cada bloque mida lo mismo y el -50% sea exacto
-          <div key={i} className="flex items-center gap-10 pr-10">
+          <div key={i} className="flex items-center gap-12 pr-12">
             <span
-              className="text-3xl md:text-4xl leading-none text-black"
+              className="text-4xl md:text-5xl leading-none text-gray-900 tracking-widest uppercase transition-colors hover:text-gray-300"
               style={{ fontFamily: "Bebas Neue" }}
             >
               {item}
             </span>
-            <span className="h-2 w-2 rounded-full bg-black" />
           </div>
         ))}
       </div>

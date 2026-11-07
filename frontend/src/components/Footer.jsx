@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import Icon from "./Icon";
 
-// ✏️ PERSONALIZA TODO DESDE AQUÍ — no necesitas tocar el JSX de abajo.
 const BRAND = {
   name: "PRIME",
   tagline: "Viste y entrena premium.",
@@ -29,19 +28,18 @@ const LINK_GROUPS = [
 
 // Redes: "icon" es el nombre de un ícono de Icon.jsx
 const SOCIALS = [
-  { label: "Instagram", icon: "instagram", href: "#" },
-  { label: "WhatsApp", icon: "chat", href: "#" },
+  { label: "Instagram", icon: "instagram", href: "https://instagram.com/PRIME_Mzo" },
+  { label: "WhatsApp", icon: "chat", href: "https://wa.me/523141425761" },
 ];
 
 const CONTACT = [
-  { icon: "mail", text: "tucorreo@ejemplo.com" },
-  { icon: "phone", text: "+00 000 000 0000" },
-  { icon: "pin", text: "Tu ciudad, País" },
+  { icon: "mail", text: "primemzo@gmail.com" },
+  { icon: "pin", text: "Manzanillo, Colima. Mexico " },
 ];
 
-// Componente pequeño que decide qué etiqueta usar según el tipo de enlace
 function FooterLink({ href, children }) {
-  const className = "text-gray-400 transition hover:text-white";
+  // Ajustamos el color para fondo claro
+  const className = "text-gray-500 transition-colors hover:text-black";
 
   if (href.startsWith("/")) {
     return (
@@ -66,7 +64,8 @@ function FooterLink({ href, children }) {
 
 function Footer() {
   return (
-    <footer className="mt-8 overflow-hidden rounded-t-[2.5rem] bg-black text-white">
+    // mt-auto lo empuja al final. Fondo claro y texto negro.
+    <footer className="mt-auto overflow-hidden rounded-t-[2.5rem] bg-[#fefefc] border-t border-gray-200 text-black">
       <div className="px-6 pt-16 md:px-24">
         <div className="grid gap-12 md:grid-cols-[1.5fr_1fr_1fr]">
           {/* Mensaje + redes */}
@@ -83,8 +82,10 @@ function Footer() {
                 <a
                   key={social.label}
                   href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
                   aria-label={social.label}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-white/25 transition hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-300 bg-transparent transition-all hover:bg-black hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                 >
                   <Icon name={social.icon} className="h-5 w-5" />
                 </a>
@@ -95,7 +96,7 @@ function Footer() {
           {/* Grupos de enlaces generados desde LINK_GROUPS */}
           {LINK_GROUPS.map((group) => (
             <div key={group.title}>
-              <h3 className="text-xs uppercase tracking-[0.3em] text-gray-500">
+              <h3 className="text-xs uppercase tracking-[0.3em] font-bold text-gray-400">
                 {group.title}
               </h3>
               <ul className="mt-5 space-y-3">
@@ -110,7 +111,7 @@ function Footer() {
         </div>
 
         {/* Contacto + derechos */}
-        <div className="mt-14 flex flex-col gap-6 border-t border-white/15 pt-8 text-sm text-gray-400 md:flex-row md:items-center md:justify-between">
+        <div className="mt-14 flex flex-col gap-6 border-t border-gray-200 pt-8 text-sm text-gray-500 md:flex-row md:items-center md:justify-between">
           <ul className="flex flex-col gap-3 md:flex-row md:gap-8">
             {CONTACT.map((item) => (
               <li key={item.text} className="flex items-center gap-2">
@@ -121,16 +122,16 @@ function Footer() {
           </ul>
 
           {/* El año se calcula solo */}
-          <p className="text-gray-500">
+          <p className="text-gray-400">
             © {new Date().getFullYear()} {BRAND.name}. Todos los derechos reservados.
           </p>
         </div>
       </div>
 
-      {/* Wordmark gigante, tono sobre tono: decorativo, por eso aria-hidden */}
+      {/* Wordmark gigante, tono sobre tono (negro al 3% de opacidad para que parezca marca de agua) */}
       <p
         aria-hidden="true"
-        className="select-none pt-10 text-center text-[26vw] leading-[0.85] text-white/10 md:text-[18rem]"
+        className="select-none pt-10 pb-4 text-center text-[26vw] leading-[0.85] text-black/[0.03] md:text-[18rem]"
         style={{ fontFamily: "Bebas Neue" }}
       >
         {BRAND.name}
