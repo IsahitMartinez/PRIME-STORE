@@ -80,7 +80,7 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
         className="text-7xl text-black mt-10"
         style={{ fontFamily: "Bebas Neue" }}
       >
-        SHOP
+        TIENDA
       </h1>
 
       <p className="text-xl text-gray-500 mt-4">
