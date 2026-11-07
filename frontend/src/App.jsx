@@ -4,7 +4,7 @@ import SplashScreen from "./components/SplashScreen";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import SideBarCart from "./components/SideBarCart";
-import NewsletterModal from "./components/NewsletterModal"; // Importamos el nuevo modal
+import NewsletterModal from "./components/NewsletterModal";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -41,6 +41,7 @@ function App() {
     }
   }, [cartItems]);
 
+  // Agregar producto agrupando por ID y Talla + Validación de Stock
   function addToCart(product) {
     const sizeKey = product.selectedSize || "Unitalla";
     const colorKey = product.selectedColor || "Único";
@@ -57,6 +58,7 @@ function App() {
     const maxStock = product.stock !== undefined ? product.stock : 999;
 
     if (currentQtyInCart + 1 > maxStock) {
+      // El límite se maneja silenciosamente aquí, o el usuario lo verá en el carrito
       return;
     }
 
@@ -72,6 +74,8 @@ function App() {
       }
       return [...prevItems, { ...product, cantidad: 1, selectedSize: sizeKey, selectedColor: colorKey }];
     });
+
+    // ¡ELIMINAMOS setIsCartOpen(true) PARA QUE YA NO SE ABRA AUTOMÁTICAMENTE!
   }
 
   // Modificar cantidad (+1 / -1)

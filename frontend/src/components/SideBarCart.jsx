@@ -29,7 +29,7 @@ function SideBarCart({
     return acc + (price * qty);
   }, 0);
 
-  // Aplica 10% de descuento si hay 3 o más artículos en total
+  // Aplica 10% de descuento si hay 4 o más artículos en total
   const hasDiscount = totalItems >= 4;
   const discountAmount = hasDiscount ? subtotalAmount * 0.10 : 0;
   const totalAmount = subtotalAmount - discountAmount;
@@ -194,7 +194,7 @@ function SideBarCart({
 
               <div className="flex justify-between items-center text-2xl font-bold mb-5">
                 <span>Total:</span>
-                <span className="text-green-600">${totalAmount.toFixed(2)} MXN</span>
+                <span className="text-green-500">${totalAmount.toFixed(2)} MXN</span>
               </div>
 
               <button 
