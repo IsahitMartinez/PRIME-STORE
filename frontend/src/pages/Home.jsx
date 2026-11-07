@@ -3,6 +3,13 @@ import Navbar from "../components/Navbar";
 import ImagesCarousel from "../components/ImagesCarousel";
 import { useNavigate } from "react-router-dom";
 
+// NUEVO: componentes que se agregan debajo del hero
+import Marquee from "../components/Marquee";
+import InfoCarousel from "../components/InfoCarousel";
+import HowToOrder from "../components/HowToOrder";
+import WhyOrderWithMe from "../components/WhyOrderWithMe";
+import Footer from "../components/Footer";
+
 function Home({ openNewsletter }) {
   // Estado para detectar si el mouse está encima del carrusel
   const [isHovered, setIsHovered] = useState(false);
@@ -74,6 +81,13 @@ function Home({ openNewsletter }) {
           <ImagesCarousel />
         </div>
       </section>
+
+      {/* ===== NUEVO: secciones debajo del hero ===== */}
+      <Marquee />
+      <InfoCarousel />
+      <HowToOrder />
+      <WhyOrderWithMe />
+      <Footer />
     </div>
   );
 }
