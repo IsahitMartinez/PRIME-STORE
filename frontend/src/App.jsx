@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import SideBarCart from "./components/SideBarCart";
 import NewsletterModal from "./components/NewsletterModal";
+import Admin from "./pages/Admin";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -164,6 +165,10 @@ function App() {
               openNewsletter={() => setIsNewsletterOpen(true)}
             />
           }
+        />
+        <Route
+          path="/admin"
+          element={<Admin />}
         />
       </Routes>
     </Router>

@@ -20,13 +20,13 @@ function NewsletterModal({ isOpen, onClose, onContinue }) {
 
     setIsSubmitting(true);
 
-    // Guardar en Supabase
+    // 1. Guardar en Supabase (tabla newsletter)
     const { error } = await supabase
       .from("newsletter")
       .insert([{ email }]);
 
     if (error) {
-      // Si el código es 23505 significa que el correo ya existía en la base de datos
+      // Si el código es 23505 significa que el correo ya existía, igual podemos mandar el de bienvenida o continuar
       if (error.code === '23505') {
         setIsSuccess(true);
       } else {
@@ -34,6 +34,15 @@ function NewsletterModal({ isOpen, onClose, onContinue }) {
       }
     } else {
       setIsSuccess(true);
+    }
+
+    // 2. Disparar la Edge Function para enviar el correo con Resend
+    try {
+      await supabase.functions.invoke("send-welcome", {
+        body: { email }
+      });
+    } catch (err) {
+      console.error("Error al disparar la función de bienvenida:", err);
     }
 
     setIsSubmitting(false);

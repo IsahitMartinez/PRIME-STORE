@@ -1,48 +1,46 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
-// DICCIONARIO DE COLORES: Traduce el nombre en texto a un código de color real.
 const getColorHex = (colorName) => {
   const normalized = colorName.toLowerCase().trim();
   const colorMap = {
     negro: "#000000",
     blanco: "#ffffff",
     gris: "#9CA3AF",
-    rojo: "#DC2626", // Rojo vivo
-    "rojo vino": "#722F37", // Tono vino / burgundy
+    rojo: "#DC2626",
+    "rojo vino": "#722F37",
     vino: "#722F37",
     azul: "#2563EB",
-    "azul marino": "#1E3A8A", // Azul oscuro
+    "azul marino": "#1E3A8A",
     verde: "#16A34A",
-    "verde militar": "#4B5320", // Verde opaco / army
+    "verde militar": "#4B5320",
     amarillo: "#EAB308",
     naranja: "#EA580C",
     rosa: "#DB2777",
     morado: "#9333EA",
     cafe: "#78350F",
   };
-  return colorMap[normalized] || "#111827"; // Por defecto, casi negro
+  return colorMap[normalized] || "#111827";
 };
 
 function ProductDetailModal({ product, onClose, addToCart }) {
   if (!product) return null;
 
-  // Manejo de galería de imágenes
-  const images =
-    product.images && product.images.length > 0
-      ? product.images
-      : [product.image_url];
+  const parsedImages = product.image_url 
+    ? product.image_url.split(",").map((url) => url.trim()).filter(Boolean)
+    : [];
+    
+  const images = parsedImages.length > 0 ? parsedImages : [];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // 1. LIMPIEZA EXTREMA DEL ARREGLO DE SUPABASE
   const rawColors = product.colors || product.colores || "Único";
   let parsedColors = ["Único"];
 
   if (Array.isArray(rawColors)) {
     parsedColors = rawColors;
   } else if (typeof rawColors === "string") {
-    const cleanString = rawColors.replace(/[{}"']/g, ""); // Borra llaves y comillas
+    const cleanString = rawColors.replace(/[{}"']/g, "");
     parsedColors = cleanString.split(",").map((c) => c.trim()).filter(Boolean);
   }
   
@@ -50,14 +48,12 @@ function ProductDetailModal({ product, onClose, addToCart }) {
   const [selectedColor, setSelectedColor] = useState(availableColors[0]);
   const [hoveredColor, setHoveredColor] = useState(null);
 
-  // Lógica para cambiar la imagen al pasar el cursor sobre un color (si tienes color_images en BD)
   const colorImages = product.color_images || product.imagenes_color || {};
   const displayImage =
     (hoveredColor && colorImages[hoveredColor]) ||
     (selectedColor && colorImages[selectedColor]) ||
     images[currentImageIndex];
 
-  // 2. DETECTAR SI ES PANTS YOGA O TIENE TALLAS ACTIVADAS
   const isYogaPants = 
     product.name && 
     (product.name.toLowerCase().includes("pants yoga") || product.name.toLowerCase().includes("yoga"));
@@ -71,11 +67,9 @@ function ProductDetailModal({ product, onClose, addToCart }) {
 
   const [selectedSize, setSelectedSize] = useState(availableSizes[0]);
 
-  // Navegación de carrusel
   const handleNextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
   const handlePrevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
 
-  // Botón agregar
   const handleAdd = () => {
     const itemToAdd = {
       ...product,
@@ -95,7 +89,6 @@ function ProductDetailModal({ product, onClose, addToCart }) {
         className="bg-white rounded-3xl max-w-4xl w-full overflow-hidden shadow-2xl flex flex-col md:flex-row relative max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* BOTÓN CERRAR */}
         <button
           type="button"
           onClick={onClose}
@@ -104,14 +97,15 @@ function ProductDetailModal({ product, onClose, addToCart }) {
           <X size={20} />
         </button>
 
-        {/* FOTO IZQUIERDA */}
         <div className="w-full md:w-1/2 bg-gray-100 p-6 flex flex-col items-center justify-between relative min-h-[350px]">
           <div className="relative w-full h-80 md:h-96 flex items-center justify-center">
-            <img
-              src={displayImage}
-              alt={product.name}
-              className="w-full h-full object-cover rounded-2xl shadow-md transition-all duration-300 ease-out"
-            />
+            {displayImage && (
+              <img
+                src={displayImage}
+                alt={product.name}
+                className="w-full h-full object-cover rounded-2xl shadow-md transition-all duration-300 ease-out"
+              />
+            )}
             {images.length > 1 && (
               <>
                 <button
@@ -132,7 +126,6 @@ function ProductDetailModal({ product, onClose, addToCart }) {
             )}
           </div>
 
-          {/* Miniaturas */}
           {images.length > 1 && (
             <div className="flex gap-2 mt-4 overflow-x-auto max-w-full pb-1">
               {images.map((img, idx) => (
@@ -140,7 +133,7 @@ function ProductDetailModal({ product, onClose, addToCart }) {
                   key={idx}
                   type="button"
                   onClick={() => setCurrentImageIndex(idx)}
-                  className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                  className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
                     currentImageIndex === idx
                       ? "border-black scale-105"
                       : "border-transparent opacity-60 hover:opacity-100"
@@ -153,7 +146,6 @@ function ProductDetailModal({ product, onClose, addToCart }) {
           )}
         </div>
 
-        {/* INFORMACIÓN DERECHA */}
         <div className="w-full md:w-1/2 p-8 flex flex-col justify-between overflow-y-auto">
           <div>
             <span className="text-xs font-black tracking-widest text-gray-400 uppercase">
@@ -172,7 +164,6 @@ function ProductDetailModal({ product, onClose, addToCart }) {
               {product.description || "Prenda urbana de alta calidad diseñada para máxima comodidad y estilo en el uso diario."}
             </p>
 
-            {/* SELECTOR DE COLORES */}
             <div className="mt-6">
               <h3 className="text-xs font-bold tracking-wider text-gray-700 uppercase mb-3 flex items-center justify-between">
                 <span>COLOR:</span>
@@ -188,7 +179,6 @@ function ProductDetailModal({ product, onClose, addToCart }) {
                   const isActive = isSelected || isHovered;
                   
                   const hexColor = getColorHex(color);
-                  // Texto oscuro para colores claros, texto claro para oscuros
                   const isLightText = ["blanco", "amarillo"].includes(color.toLowerCase().trim());
 
                   return (
@@ -216,7 +206,6 @@ function ProductDetailModal({ product, onClose, addToCart }) {
               </div>
             </div>
 
-            {/* SELECTOR DE TALLA (SOLO PANTS YOGA) */}
             {requiresSize ? (
               <div className="mt-6">
                 <h3 className="text-xs font-bold tracking-wider text-gray-700 uppercase mb-3">

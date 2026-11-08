@@ -9,11 +9,7 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
   const [loading, setLoading] = useState(true);
   const [hoveredId, setHoveredId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
-  // Filtros por categoría
   const [selectedCategory, setSelectedCategory] = useState("TODOS");
-
-  // Estado del Toast Notification
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
 
@@ -44,13 +40,6 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
     }, 2500);
   };
 
-  const handleAddToCart = (product, e) => {
-    if (e) e.stopPropagation();
-    addToCart(product);
-    triggerToast(product.name);
-  };
-
-  // Categorías dinámicas
   const categories = [
     "TODOS",
     ...new Set(
@@ -70,10 +59,7 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
 
   return (
     <div className="min-h-screen bg-[#fefefc] p-8">
-      {/* Pasamos openNewsletter al Navbar */}
       <Navbar cartCount={cartCount} openCart={openCart} openNewsletter={openNewsletter} />
-
-      {/* NOTIFICACIÓN TOAST */}
       <ToastNotification message={toastMessage} isVisible={showToast} />
 
       <h1
@@ -87,7 +73,6 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
         Explora y adquiere comodidad con estilo
       </p>
 
-      {/* FILTROS POR CATEGORÍA */}
       {!loading && products.length > 0 && (
         <div className="flex flex-wrap gap-4 mt-6">
           {categories.map((cat) => (
@@ -112,7 +97,6 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
         </div>
       )}
 
-      {/* RENDERIZADO: SKELETON LOADERS O PRODUCTOS */}
       {loading ? (
         <div className="grid grid-cols-3 gap-10 mt-10">
           {[1, 2, 3, 4, 5, 6].map((n) => (
@@ -137,7 +121,7 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
           {filteredProducts.map((product) => {
             const isHovered = hoveredId === product.id;
             const isOutStock = product.stock !== undefined && product.stock <= 0;
-            const isNewDrop = product.is_new || product.is_new_drop;
+            const firstImage = product.image_url ? product.image_url.split(",")[0].trim() : "";
 
             return (
               <div
@@ -155,28 +139,22 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
                 }}
                 className="bg-white p-4 rounded-3xl cursor-pointer relative"
               >
-                {/* ETIQUETA AGOTADO */}
                 {isOutStock && (
                   <span className="absolute top-7 left-7 z-10 bg-red-500 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase shadow-md">
                     AGOTADO
                   </span>
                 )}
 
-                {/* BADGE NUEVO DROP */}
-                {!isOutStock && isNewDrop && (
-                  <span className="absolute top-7 left-7 z-10 bg-black text-white text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase shadow-md border border-gray-700 flex items-center gap-1">
-                    NUEVO DROP ⚡
-                  </span>
-                )}
-
                 <div className="w-full h-80 rounded-3xl overflow-hidden mb-5 relative">
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className={`w-full h-full object-cover transition-transform duration-500 ease-out hover:scale-105 ${
-                      isOutStock ? "grayscale opacity-75" : ""
-                    }`}
-                  />
+                  {firstImage && (
+                    <img
+                      src={firstImage}
+                      alt={product.name}
+                      className={`w-full h-full object-cover transition-transform duration-500 ease-out hover:scale-105 ${
+                        isOutStock ? "grayscale opacity-75" : ""
+                      }`}
+                    />
+                  )}
                 </div>
 
                 <h2 className="text-xl font-bold">{product.name}</h2>
@@ -209,7 +187,6 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
         </div>
       )}
 
-      {/* MODAL DE VISTA DE DETALLE */}
       {selectedProduct && (
         <ProductDetailModal
           product={selectedProduct}
