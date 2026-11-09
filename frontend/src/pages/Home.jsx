@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar";
+import NavBar from "../components/NavBar";
 import ImagesCarousel from "../components/ImagesCarousel";
 import { useNavigate } from "react-router-dom";
 

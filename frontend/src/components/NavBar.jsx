@@ -90,4 +90,4 @@ function Navbar({ cartCount, openCart, openNewsletter }) {
   );
 }
 
-export default Navbar;
+export default NavBar;
