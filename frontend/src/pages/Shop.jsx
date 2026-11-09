@@ -59,7 +59,7 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
 
   return (
     <div className="min-h-screen bg-[#fefefc] p-8">
-      <Navbar cartCount={cartCount} openCart={openCart} openNewsletter={openNewsletter} />
+      <NavBar cartCount={cartCount} openCart={openCart} openNewsletter={openNewsletter} />
       <ToastNotification message={toastMessage} isVisible={showToast} />
 
       <h1

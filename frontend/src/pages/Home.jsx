@@ -22,8 +22,8 @@ function Home({ openNewsletter }) {
 
   return (
     <div className="min-h-screen bg-[#fefefc]">
-      {/* Pasamos la función al Navbar para que el icono del usuario funcione aquí también */}
-      <Navbar openNewsletter={openNewsletter} />
+     
+      <NavBar openNewsletter={openNewsletter} />
 
       <section
         className="h-screen flex items-center justify-between px-24 gap-20"
