@@ -2,8 +2,6 @@
 
 A modern, high-performance e-commerce storefront designed for **PRIME STREETWEAR**. Built with React, Tailwind CSS, Supabase, and automated transactional emails.
 
-![PRIME Store Overview](https://raw.githubusercontent.com/placeholder-image.png)
-
 ---
 
 ## Features
@@ -24,7 +22,7 @@ A modern, high-performance e-commerce storefront designed for **PRIME STREETWEAR
 - **Serverless Compute:** Supabase Edge Functions (Deno / TypeScript)
 - **Email Delivery Provider:** Brevo API (SMTP / Transactional Email)
 - **Build Tool:** Vite
-
+  
 ---
 
 ## Getting Started
