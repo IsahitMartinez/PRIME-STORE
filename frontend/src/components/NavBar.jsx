@@ -6,7 +6,7 @@ import logo from "../assets/ONLYFIGURE.png";
 
 const letters = ["P", "R", "I", "M", "E"];
 
-function Navbar({ cartCount, openCart, openNewsletter }) {
+function NavBar({ cartCount, openCart, openNewsletter }) {
   return (
     <nav className="fixed top-0 left-0 w-full z-30 bg-[#fefefc]">
       <div className="w-full px-10 py-2 flex items-center">
