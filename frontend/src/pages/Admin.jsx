@@ -20,6 +20,7 @@ function Admin() {
     image_url: "",
     stock: "",
     colors: "",
+    status: "in_stock", // <-- Agregado por defecto
   });
 
   const fetchProducts = async () => {
@@ -62,6 +63,22 @@ function Admin() {
     setFormData({ ...formData, [name]: value });
   };
 
+    const handleStatusChange = async (id, newStatus) => {
+    const { data, error } = await supabase
+      .from("products")
+      .update({ status: newStatus })
+      .eq("id", id)
+      .select(); // <-- Obliga a Supabase a devolver la fila modificada
+
+    if (error) {
+      alert("Error actualizando disponibilidad: " + error.message);
+    } else if (!data || data.length === 0) {
+      alert("Supabase bloqueó el cambio. Revisa las políticas RLS de UPDATE.");
+    } else {
+      setProducts(products.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
+    }
+  };
+
   const openModal = (product = null) => {
     if (product) {
       setEditingId(product.id);
@@ -72,10 +89,11 @@ function Admin() {
         image_url: product.image_url || "",
         stock: product.stock || "",
         colors: product.colors || "",
+        status: product.status || "in_stock", // <-- Carga el estado al editar
       });
     } else {
       setEditingId(null);
-      setFormData({ name: "", price: "", categoria: "", image_url: "", stock: "", colors: "" });
+      setFormData({ name: "", price: "", categoria: "", image_url: "", stock: "", colors: "", status: "in_stock" });
     }
     setIsModalOpen(true);
   };
@@ -94,6 +112,7 @@ function Admin() {
       image_url: formData.image_url,
       stock: parseInt(formData.stock),
       colors: formData.colors,
+      status: formData.status, // <-- Incluye el estado al guardar
     };
 
     if (editingId) {
@@ -115,6 +134,7 @@ function Admin() {
   };
 
   if (!isAuthenticated) {
+    // ... Tu pantalla de login se mantiene intacta ...
     return (
       <div className="min-h-screen bg-[#fefefc] flex items-center justify-center p-6">
         <div className="w-full max-w-sm bg-white p-10 rounded-[2.5rem] shadow-2xl border border-gray-100 text-center">
@@ -186,6 +206,7 @@ function Admin() {
                   <th className="p-5 font-semibold">Categoría</th>
                   <th className="p-5 font-semibold">Precio</th>
                   <th className="p-5 font-semibold">Stock</th>
+                  <th className="p-5 font-semibold">Disponibilidad</th> {/* <-- Nueva columna */}
                   <th className="p-5 font-semibold">Colores</th>
                   <th className="p-5 font-semibold text-right">Acciones</th>
                 </tr>
@@ -193,19 +214,18 @@ function Admin() {
               <tbody className="divide-y divide-gray-100">
                 {loading ? (
                   <tr>
-                    <td colSpan="6" className="p-10 text-center text-gray-400 font-medium">
+                    <td colSpan="7" className="p-10 text-center text-gray-400 font-medium">
                       Cargando inventario...
                     </td>
                   </tr>
                 ) : products.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="p-10 text-center text-gray-400 font-medium">
+                    <td colSpan="7" className="p-10 text-center text-gray-400 font-medium">
                       No hay productos registrados.
                     </td>
                   </tr>
                 ) : (
                   products.map((p) => {
-                    // Extraemos solo la primera imagen para mostrarla en la tabla
                     const firstImage = p.image_url ? p.image_url.split(",")[0].trim() : "";
                     
                     return (
@@ -229,6 +249,19 @@ function Admin() {
                             {p.stock} pz
                           </span>
                         </td>
+                        
+                        {/* CELDA DE DISPONIBILIDAD (Con el Select In-Line) */}
+                        <td className="p-5 text-sm">
+                          <select
+                            value={p.status || "in_stock"}
+                            onChange={(e) => handleStatusChange(p.id, e.target.value)}
+                            className="bg-gray-50 border border-gray-200 text-xs px-2 py-1.5 rounded-lg outline-none focus:border-black cursor-pointer text-gray-700"
+                          >
+                            <option value="in_stock">En Stock</option>
+                            <option value="pre_order">Sobre Pedido</option>
+                          </select>
+                        </td>
+
                         <td className="p-5 text-sm text-gray-500 truncate max-w-[150px]">
                           {p.colors || "Único"}
                         </td>
@@ -299,13 +332,28 @@ function Admin() {
                 </div>
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-1">Categoría</label>
-                <input 
-                  type="text" name="categoria" required placeholder="Ej: HOODIES, TEES..."
-                  value={formData.categoria} onChange={handleInputChange}
-                  className="w-full bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-black transition-colors uppercase"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-1">Categoría</label>
+                  <input 
+                    type="text" name="categoria" required placeholder="Ej: HOODIES, TEES..."
+                    value={formData.categoria} onChange={handleInputChange}
+                    className="w-full bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-black transition-colors uppercase"
+                  />
+                </div>
+                
+                {/* NUEVO CAMPO: Selector de disponibilidad en el formulario modal */}
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-1">Disponibilidad</label>
+                  <select 
+                    name="status"
+                    value={formData.status} onChange={handleInputChange}
+                    className="w-full bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl outline-none focus:border-black transition-colors text-gray-700"
+                  >
+                    <option value="in_stock">En Stock</option>
+                    <option value="pre_order">Sobre Pedido</option>
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -323,7 +371,6 @@ function Admin() {
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-1">
                   URLs de las Imágenes (Separadas por coma)
                 </label>
-                {/* Cambiamos a textarea para que sea más fácil pegar URLs largas */}
                 <textarea 
                   name="image_url" required rows="3"
                   placeholder="Ej: https://imagen1.jpg, https://imagen2.jpg"

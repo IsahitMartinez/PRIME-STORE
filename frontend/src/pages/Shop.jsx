@@ -40,8 +40,7 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
     }, 2500);
   };
 
-  const categories = [
-    "TODOS",
+  const dynamicCategories = [
     ...new Set(
       products
         .map((p) => (p.categoria || p.category || "").toUpperCase())
@@ -49,13 +48,15 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
     ),
   ];
 
-  const filteredProducts =
-    selectedCategory === "TODOS"
-      ? products
-      : products.filter(
-          (p) =>
-            (p.categoria || p.category || "").toUpperCase() === selectedCategory
-        );
+  const filterOptions = ["TODOS", ...dynamicCategories, "EN STOCK", "SOBRE PEDIDO"];
+
+  const filteredProducts = products.filter((p) => {
+    if (selectedCategory === "TODOS") return true;
+    if (selectedCategory === "EN STOCK") return p.status === "in_stock";
+    if (selectedCategory === "SOBRE PEDIDO") return p.status === "pre_order";
+
+    return (p.categoria || p.category || "").toUpperCase() === selectedCategory;
+  });
 
   return (
     <div className="min-h-screen bg-[#fefefc] p-8">
@@ -75,23 +76,23 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
 
       {!loading && products.length > 0 && (
         <div className="flex flex-wrap gap-4 mt-6">
-          {categories.map((cat) => (
+          {filterOptions.map((option) => (
             <button
-              key={cat}
+              key={option}
               type="button"
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => setSelectedCategory(option)}
               className={`
                 px-6 py-2.5 rounded-full font-bold text-xs tracking-widest cursor-pointer
                 transition-all duration-300 ease-out uppercase
                 hover:-translate-y-1 active:-translate-y-0.5
                 ${
-                  selectedCategory === cat
+                  selectedCategory === option
                     ? "bg-black text-white shadow-lg scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }
               `}
             >
-              {cat}
+              {option}
             </button>
           ))}
         </div>
@@ -120,8 +121,25 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
         <div className="grid grid-cols-3 gap-10 mt-10">
           {filteredProducts.map((product) => {
             const isHovered = hoveredId === product.id;
-            const isOutStock = product.stock !== undefined && product.stock <= 0;
             const firstImage = product.image_url ? product.image_url.split(",")[0].trim() : "";
+
+            // Solo se marca agotado si NO es sobre pedido y el stock es 0 o menor
+            const isOutStock =
+              product.status !== "pre_order" &&
+              product.stock !== undefined &&
+              product.stock <= 0;
+
+            // Lógica de colores y texto para la etiqueta
+            let badgeLabel = "EN STOCK";
+            let badgeColor = "bg-green-500";
+
+            if (isOutStock) {
+              badgeLabel = "AGOTADO";
+              badgeColor = "bg-red-500";
+            } else if (product.status === "pre_order") {
+              badgeLabel = "SOBRE PEDIDO";
+              badgeColor = "bg-orange-500";
+            }
 
             return (
               <div
@@ -139,11 +157,11 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
                 }}
                 className="bg-white p-4 rounded-3xl cursor-pointer relative"
               >
-                {isOutStock && (
-                  <span className="absolute top-7 left-7 z-10 bg-red-500 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase shadow-md">
-                    AGOTADO
-                  </span>
-                )}
+                <span
+                  className={`absolute top-7 left-7 z-10 ${badgeColor} text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase shadow-md`}
+                >
+                  {badgeLabel}
+                </span>
 
                 <div className="w-full h-80 rounded-3xl overflow-hidden mb-5 relative">
                   {firstImage && (
