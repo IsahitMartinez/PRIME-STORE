@@ -5,22 +5,22 @@ const REASONS = [
   {
     icon: "user",
     title: "Trato directo",
-    text: "Hablas conmigo, no con un formulario. Resuelvo tus dudas de tallas y disponibilidad.",
+    text: "Nos  ponemos de acuerdo directamente, sin intermediarios o pasos extra.",
   },
   {
     icon: "eye",
-    title: "Calidad que reviso",
+    title: "Calidad garantizada",
     text: "Cada prenda pasa por mis manos antes de llegar a las tuyas.",
   },
   {
     icon: "wallet",
     title: "Precio justo",
-    text: "Sin cargos sorpresa: pagas lo que ves, y te explico cómo pagar antes de que decidas.",
+    text: "Lo mejor calidad-precio que encontraras",
   },
   {
     icon: "clock",
     title: "Respuesta rápida",
-    text: "Te contesto directo, sin esperar a que te atienda un agente.",
+    text: "Se te antiende personaly rapidamente.",
   },
 ];
 
@@ -35,7 +35,7 @@ function WhyOrderWithMe() {
             className="text-6xl leading-none text-black md:text-8xl"
             style={{ fontFamily: "Bebas Neue" }}
           >
-            ¿Por qué pedir conmigo?
+            ¿Por qué pedir con nosotros?
           </h2>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-gray-600">
             Una tienda pequeña tiene una ventaja: cada pedido importa y lo cuido yo mismo.

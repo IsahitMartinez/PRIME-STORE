@@ -10,7 +10,7 @@ const SLIDES = [
   {
     icon: "tag",
     title: "Lo que nos caracteriza, es la confianza",
-    text: "Compras directo conmigo, nada de tramites o pasos innecesarios",
+    text: "Compras directo con nosotros, nada de tramites o pasos innecesarios",
   },
   {
     icon: "ruler",
