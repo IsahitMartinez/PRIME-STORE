@@ -38,7 +38,7 @@ function WhyOrderWithMe() {
             ¿Por qué pedir con nosotros?
           </h2>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-gray-600">
-            Una tienda pequeña tiene una ventaja: cada pedido importa y lo cuido yo mismo.
+            Una tienda pequeña tiene una ventaja: cada pedido importa.
           </p>
         </div>
 

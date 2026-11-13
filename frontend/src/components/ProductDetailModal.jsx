@@ -26,8 +26,12 @@ const getColorHex = (colorName) => {
 function ProductDetailModal({ product, onClose, addToCart }) {
   if (!product) return null;
 
+  // 1. Limpieza robusta de las imágenes para evitar que el carrusel se trabe
   const parsedImages = product.image_url 
-    ? product.image_url.split(",").map((url) => url.trim()).filter(Boolean)
+    ? product.image_url
+        .split(",")
+        .map((url) => url.replace(/['"\n\r]/g, "").trim()) // Quita comillas y saltos de línea
+        .filter(Boolean)
     : [];
     
   const images = parsedImages.length > 0 ? parsedImages : [];
@@ -75,6 +79,8 @@ function ProductDetailModal({ product, onClose, addToCart }) {
       ...product,
       selectedColor: selectedColor,
       selectedSize: requiresSize ? selectedSize : "Unitalla",
+      // Nos aseguramos de enviar la imagen que se está viendo al momento de agregar al carrito
+      image_url: displayImage 
     };
     addToCart(itemToAdd);
     onClose();
@@ -97,15 +103,21 @@ function ProductDetailModal({ product, onClose, addToCart }) {
           <X size={20} />
         </button>
 
-        <div className="w-full md:w-1/2 bg-gray-100 p-6 flex flex-col items-center justify-between relative min-h-[350px]">
+        {/* 2. Añadí overflow-hidden aquí para que las imágenes no se salgan hacia abajo */}
+        <div className="w-full md:w-1/2 bg-gray-100 p-6 flex flex-col items-center justify-between relative min-h-[350px] overflow-hidden">
           <div className="relative w-full h-80 md:h-96 flex items-center justify-center">
-            {displayImage && (
+            {displayImage ? (
               <img
                 src={displayImage}
                 alt={product.name}
                 className="w-full h-full object-cover rounded-2xl shadow-md transition-all duration-300 ease-out"
               />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-200 rounded-2xl text-gray-400 font-bold">
+                Sin Imagen
+              </div>
             )}
+            
             {images.length > 1 && (
               <>
                 <button
@@ -126,8 +138,9 @@ function ProductDetailModal({ product, onClose, addToCart }) {
             )}
           </div>
 
+          {/* Carrusel de miniaturas (thumbnails) */}
           {images.length > 1 && (
-            <div className="flex gap-2 mt-4 overflow-x-auto max-w-full pb-1">
+            <div className="flex gap-2 mt-4 overflow-x-auto max-w-full pb-2 scrollbar-hide">
               {images.map((img, idx) => (
                 <button
                   key={idx}
@@ -139,7 +152,7 @@ function ProductDetailModal({ product, onClose, addToCart }) {
                       : "border-transparent opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={img} alt={`Vista ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -240,7 +253,7 @@ function ProductDetailModal({ product, onClose, addToCart }) {
           <button
             type="button"
             onClick={handleAdd}
-            className="mt-8 w-full bg-black text-white py-4 rounded-full font-bold text-sm tracking-widest uppercase transition-all duration-300 hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)] hover:-translate-y-1 active:-translate-y-0.5 cursor-pointer"
+            className="mt-8 w-full bg-black text-white py-4 rounded-full font-bold text-sm tracking-widest uppercase transition-all duration-300 hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)] hover:-translate-y-1 active:-translate-y-0.5 cursor-pointer shrink-0"
           >
             AGREGAR AL CARRITO
           </button>

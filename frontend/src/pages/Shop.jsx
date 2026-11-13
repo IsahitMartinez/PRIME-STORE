@@ -28,7 +28,6 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
         setLoading(false);
       }
     }
-
     fetchProducts();
   }, []);
 
@@ -59,30 +58,31 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
   });
 
   return (
-    <div className="min-h-screen bg-[#fefefc] p-8">
+   <div className="min-h-screen bg-[#fefefc] px-2 pb-4 sm:p-4 md:p-8 pt-20 md:pt-24">
+      {/* El NavBar ahora tiene un poco más de aire lateral en móviles */}
       <NavBar cartCount={cartCount} openCart={openCart} openNewsletter={openNewsletter} />
       <ToastNotification message={toastMessage} isVisible={showToast} />
 
       <h1
-        className="text-7xl text-black mt-10"
+        className="text-4xl md:text-7xl text-black mt-2 md:mt-2 px-2"
         style={{ fontFamily: "Bebas Neue" }}
       >
         TIENDA
       </h1>
 
-      <p className="text-xl text-gray-500 mt-4">
+      <p className="text-sm md:text-xl text-gray-500 mt-1 md:mt-4 px-2">
         Explora y adquiere comodidad con estilo
       </p>
 
       {!loading && products.length > 0 && (
-        <div className="flex flex-wrap gap-4 mt-6">
+        <div className="flex flex-wrap gap-2 md:gap-4 mt-4 md:mt-6 px-2">
           {filterOptions.map((option) => (
             <button
               key={option}
               type="button"
               onClick={() => setSelectedCategory(option)}
               className={`
-                px-6 py-2.5 rounded-full font-bold text-xs tracking-widest cursor-pointer
+                px-3 md:px-6 py-1.5 md:py-2.5 rounded-full font-bold text-[9px] md:text-xs tracking-widest cursor-pointer
                 transition-all duration-300 ease-out uppercase
                 hover:-translate-y-1 active:-translate-y-0.5
                 ${
@@ -99,37 +99,36 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
       )}
 
       {loading ? (
-        <div className="grid grid-cols-3 gap-10 mt-10">
+        // Grid forzada a 2 columnas en móviles (grid-cols-2)
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10 mt-6 md:mt-10 px-2">
           {[1, 2, 3, 4, 5, 6].map((n) => (
             <div
               key={n}
-              className="bg-white p-4 rounded-3xl animate-pulse shadow-sm"
+              className="bg-white p-2 md:p-4 rounded-2xl md:rounded-3xl animate-pulse shadow-sm"
             >
-              <div className="w-full h-80 rounded-3xl bg-gray-200 mb-5"></div>
-              <div className="h-6 bg-gray-200 rounded-md w-3/4 mb-3"></div>
-              <div className="h-5 bg-gray-200 rounded-md w-1/4 mb-3"></div>
-              <div className="h-4 bg-gray-100 rounded-md w-1/3 mb-5"></div>
-              <div className="h-12 bg-gray-200 rounded-full w-full"></div>
+              <div className="w-full h-48 md:h-80 rounded-2xl md:rounded-3xl bg-gray-200 mb-3 md:mb-5"></div>
+              <div className="h-4 md:h-6 bg-gray-200 rounded-md w-3/4 mb-2 md:mb-3"></div>
+              <div className="h-3 md:h-5 bg-gray-200 rounded-md w-1/4 mb-2 md:mb-3"></div>
+              <div className="h-8 md:h-12 bg-gray-200 rounded-full w-full"></div>
             </div>
           ))}
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="text-center mt-20 text-xl text-gray-500">
+        <div className="text-center mt-20 text-sm md:text-xl text-gray-500">
           No hay prendas disponibles en esta categoría.
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-10 mt-10">
+        // Grid forzada a 2 columnas en móviles (grid-cols-2)
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10 mt-6 md:mt-10 px-2">
           {filteredProducts.map((product) => {
             const isHovered = hoveredId === product.id;
             const firstImage = product.image_url ? product.image_url.split(",")[0].trim() : "";
 
-            // Solo se marca agotado si NO es sobre pedido y el stock es 0 o menor
             const isOutStock =
               product.status !== "pre_order" &&
               product.stock !== undefined &&
               product.stock <= 0;
 
-            // Lógica de colores y texto para la etiqueta
             let badgeLabel = "EN STOCK";
             let badgeColor = "bg-green-500";
 
@@ -148,22 +147,22 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
                 onMouseLeave={() => setHoveredId(null)}
                 onClick={() => setSelectedProduct(product)}
                 style={{
-                  transform: isHovered ? "translateY(-10px)" : "translateY(0px)",
+                  transform: isHovered ? "translateY(-5px)" : "translateY(0px)",
                   boxShadow: isHovered
-                    ? "0 20px 40px -15px rgba(0,0,0,0.12)"
-                    : "0 4px 6px -1px rgba(0,0,0,0.05)",
-                  transition:
-                    "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                    ? "0 10px 20px -10px rgba(0,0,0,0.12)"
+                    : "0 2px 4px -1px rgba(0,0,0,0.05)",
+                  transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                 }}
-                className="bg-white p-4 rounded-3xl cursor-pointer relative"
+                className="bg-white p-2 md:p-4 rounded-2xl md:rounded-3xl cursor-pointer relative flex flex-col justify-between"
               >
                 <span
-                  className={`absolute top-7 left-7 z-10 ${badgeColor} text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase shadow-md`}
+                  className={`absolute top-4 left-4 md:top-7 md:left-7 z-10 ${badgeColor} text-white text-[8px] md:text-[10px] font-black tracking-widest px-2 py-0.5 md:px-3 md:py-1 rounded-full uppercase shadow-md`}
                 >
                   {badgeLabel}
                 </span>
 
-                <div className="w-full h-80 rounded-3xl overflow-hidden mb-5 relative">
+                {/* Altura de imagen reducida para móviles (h-48) */}
+                <div className="w-full h-48 md:h-80 rounded-2xl md:rounded-3xl overflow-hidden mb-3 md:mb-5 relative">
                   {firstImage && (
                     <img
                       src={firstImage}
@@ -175,11 +174,14 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
                   )}
                 </div>
 
-                <h2 className="text-xl font-bold">{product.name}</h2>
-                <p className="text-lg text-green-500 font-semibold">{product.price} $</p>
-                <p className="text-sm text-gray-500">
-                  {product.categoria || product.category}
-                </p>
+                <div>
+                  {/* Textos más compactos en móviles */}
+                  <h2 className="text-sm md:text-xl font-bold leading-tight">{product.name}</h2>
+                  <p className="text-sm md:text-lg text-green-500 font-semibold mt-1">{product.price} $</p>
+                  <p className="text-[10px] md:text-sm text-gray-500 truncate">
+                    {product.categoria || product.category}
+                  </p>
+                </div>
 
                 <button
                   type="button"
@@ -189,15 +191,15 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
                     setSelectedProduct(product);
                   }}
                   className={`
-                    mt-5 w-full py-3 rounded-full font-bold transition-all duration-300 ease-out border border-transparent
+                    mt-3 md:mt-5 w-full py-2 md:py-3 rounded-full text-[10px] md:text-base font-bold transition-all duration-300 ease-out border border-transparent
                     ${
                       isOutStock
                         ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                        : "bg-black text-white cursor-pointer hover:shadow-[0_0_25px_rgba(0,0,0,0.35)] hover:scale-[1.02]"
+                        : "bg-black text-white cursor-pointer hover:shadow-[0_0_15px_rgba(0,0,0,0.25)] hover:scale-[1.02]"
                     }
                   `}
                 >
-                  {isOutStock ? "AGOTADO" : "ELEGIR COLOR"}
+                  {isOutStock ? "AGOTADO" : "ELEGIR"}
                 </button>
               </div>
             );

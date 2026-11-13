@@ -20,7 +20,6 @@ const LINK_GROUPS = [
     title: "Ayuda",
     links: [
       { label: "Envíos", href: "#" },
-      { label: "Tallas", href: "#" },
       { label: "Contacto", href: "#" },
     ],
   },
