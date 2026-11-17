@@ -43,7 +43,7 @@ function Home({ openNewsletter }) {
 
           <p className="text-base sm:text-lg text-gray-600 mt-4 md:mt-8 leading-relaxed max-w-md mx-auto md:mx-0">
             Colecciones deportivas con la mejor calidad,
-            al mejor precio, no lo pienses 2 veces.
+            al mejor precio
           </p>
 
           <button
