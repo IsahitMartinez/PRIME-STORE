@@ -19,13 +19,12 @@ const LINK_GROUPS = [
   {
     title: "Ayuda",
     links: [
-      { label: "Envíos", href: "#" },
-      { label: "Contacto", href: "#" },
+      { label: "Envíos", href: "#como-pedir" },
+      { label: "Contacto", href: "https://wa.me/523141425761" },
     ],
   },
 ];
 
-// Redes: "icon" es el nombre de un ícono de Icon.jsx
 const SOCIALS = [
   { label: "Instagram", icon: "instagram", href: "https://www.instagram.com/prime_manzanillo/" },
   { label: "WhatsApp", icon: "chat", href: "https://wa.me/523141425761" },
@@ -37,7 +36,7 @@ const CONTACT = [
 ];
 
 function FooterLink({ href, children }) {
-  // Ajustamos el color para fondo claro
+
   const className = "text-gray-500 transition-colors hover:text-black";
 
   if (href.startsWith("/")) {
@@ -63,7 +62,7 @@ function FooterLink({ href, children }) {
 
 function Footer() {
   return (
-    // mt-auto lo empuja al final. Fondo claro y texto negro.
+    
     <footer className="mt-auto overflow-hidden rounded-t-[2.5rem] bg-[#fefefc] border-t border-gray-200 text-black">
       <div className="px-6 pt-16 md:px-24">
         <div className="grid gap-12 md:grid-cols-[1.5fr_1fr_1fr]">
@@ -109,7 +108,6 @@ function Footer() {
           ))}
         </div>
 
-        {/* Contacto + derechos */}
         <div className="mt-14 flex flex-col gap-6 border-t border-gray-200 pt-8 text-sm text-gray-500 md:flex-row md:items-center md:justify-between">
           <ul className="flex flex-col gap-3 md:flex-row md:gap-8">
             {CONTACT.map((item) => (
@@ -120,14 +118,14 @@ function Footer() {
             ))}
           </ul>
 
-          {/* El año se calcula solo */}
+         
           <p className="text-gray-400">
             © {new Date().getFullYear()} {BRAND.name}. Todos los derechos reservados.
           </p>
         </div>
       </div>
 
-      {/* Wordmark gigante, tono sobre tono (negro al 3% de opacidad para que parezca marca de agua) */}
+     
       <p
         aria-hidden="true"
         className="select-none pt-10 pb-4 text-center text-[26vw] leading-[0.85] text-black/[0.03] md:text-[18rem]"

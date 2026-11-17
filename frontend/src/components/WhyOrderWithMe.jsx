@@ -10,7 +10,7 @@ const REASONS = [
   {
     icon: "eye",
     title: "Calidad garantizada",
-    text: "Cada prenda pasa por mis manos antes de llegar a las tuyas.",
+    text: "Cada prenda se revisa antes de llegar a ti.",
   },
   {
     icon: "wallet",
@@ -20,7 +20,7 @@ const REASONS = [
   {
     icon: "clock",
     title: "Respuesta rápida",
-    text: "Se te antiende personaly rapidamente.",
+    text: "Se te antiende personal y rapidamente.",
   },
 ];
 
