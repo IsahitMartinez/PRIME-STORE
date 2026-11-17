@@ -27,7 +27,7 @@ const LINK_GROUPS = [
 
 // Redes: "icon" es el nombre de un ícono de Icon.jsx
 const SOCIALS = [
-  { label: "Instagram", icon: "instagram", href: "https://instagram.com/PRIME_Mzo" },
+  { label: "Instagram", icon: "instagram", href: "https://www.instagram.com/prime_manzanillo/" },
   { label: "WhatsApp", icon: "chat", href: "https://wa.me/523141425761" },
 ];
 
@@ -92,7 +92,7 @@ function Footer() {
             </div>
           </div>
 
-          {/* Grupos de enlaces generados desde LINK_GROUPS */}
+        
           {LINK_GROUPS.map((group) => (
             <div key={group.title}>
               <h3 className="text-xs uppercase tracking-[0.3em] font-bold text-gray-400">
