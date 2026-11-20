@@ -49,7 +49,8 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
     ),
   ];
 
-  const filterOptions = ["TODOS", ...dynamicCategories, "EN STOCK", "SOBRE PEDIDO"];
+  const categoryOptions = ["TODOS", ...dynamicCategories];
+  const availabilityOptions = ["EN STOCK", "SOBRE PEDIDO"];
 
   const filteredProducts = products.filter((p) => {
     if (selectedCategory === "TODOS") return true;
@@ -58,6 +59,19 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
 
     return (p.categoria || p.category || "").toUpperCase() === selectedCategory;
   });
+
+  const getMainFilterButtonStyle = () => {
+    if (selectedCategory === "EN STOCK") {
+      return "bg-emerald-600 text-white border border-emerald-700 border-b-2 border-b-emerald-800 shadow-[0_4px_12px_rgba(5,150,105,0.3)]";
+    }
+    if (selectedCategory === "SOBRE PEDIDO") {
+      return "bg-orange-500 text-white border border-orange-600 border-b-2 border-b-orange-700 shadow-[0_4px_12px_rgba(249,115,22,0.3)]";
+    }
+    if (isFilterOpen || selectedCategory !== "TODOS") {
+      return "bg-black text-white border border-black border-b-2 border-b-neutral-800 shadow-md";
+    }
+    return "bg-gray-100 text-gray-700 border border-gray-200 border-b-2 border-b-gray-300 hover:bg-gray-200/80";
+  };
 
   return (
     <div className="min-h-screen bg-[#fefefc] px-2 pb-4 sm:p-4 md:p-8 pt-20 md:pt-24">
@@ -82,15 +96,7 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
               type="button"
               onClick={() => setIsFilterOpen((prev) => !prev)}
               aria-expanded={isFilterOpen}
-              className={`
-                inline-flex items-center gap-2.5 px-4 md:px-5 py-2 md:py-2.5 rounded-full
-                font-bold text-[10px] md:text-xs tracking-widest uppercase transition-all duration-300 cursor-pointer
-                ${
-                  isFilterOpen || selectedCategory !== "TODOS"
-                    ? "bg-black text-white shadow-md"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }
-              `}
+              className={`inline-flex items-center gap-2.5 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-[10px] md:text-xs tracking-widest uppercase transition-all duration-300 cursor-pointer active:translate-y-0.5 ${getMainFilterButtonStyle()}`}
             >
               <SlidersHorizontal className="w-3.5 h-3.5 md:w-4 md:h-4" />
               <span>
@@ -124,25 +130,57 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
             }`}
           >
             <div className="overflow-hidden">
-              <div className="flex flex-wrap gap-2 md:gap-3 pt-1 pb-2">
-                {filterOptions.map((option) => (
+              <div className="flex flex-wrap items-center gap-2 md:gap-3 pt-1 pb-2">
+                {categoryOptions.map((option) => (
                   <button
                     key={option}
                     type="button"
                     onClick={() => setSelectedCategory(option)}
-                    className={`
-                      px-3.5 md:px-6 py-1.5 md:py-2.5 rounded-full font-bold text-[9px] md:text-xs tracking-widest cursor-pointer
-                      transition-all duration-300 ease-out uppercase
-                      ${
-                        selectedCategory === option
-                          ? "bg-black text-white shadow-md scale-[1.03]"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }
-                    `}
+                    className={`px-3.5 md:px-5 py-1.5 md:py-2 rounded-full font-bold text-[9px] md:text-xs tracking-widest cursor-pointer transition-all duration-200 ease-out uppercase border active:translate-y-0.5 ${
+                      selectedCategory === option
+                        ? "bg-black text-white border-black border-b-2 border-b-neutral-700 shadow-md -translate-y-0.5"
+                        : "bg-white text-gray-600 border-gray-200 border-b-2 border-b-gray-300/80 shadow-xs hover:bg-gray-50 hover:text-black"
+                    }`}
                   >
                     {option}
                   </button>
                 ))}
+
+                <span
+                  aria-hidden="true"
+                  className="hidden sm:inline-block h-5 w-px bg-gray-200 mx-1"
+                />
+
+                {availabilityOptions.map((option) => {
+                  const isInStock = option === "EN STOCK";
+                  const isActive = selectedCategory === option;
+
+                  const pillStyle = isInStock
+                    ? isActive
+                      ? "bg-emerald-600 text-white border-emerald-700 border-b-2 border-b-emerald-900 shadow-[0_4px_12px_rgba(5,150,105,0.35)] -translate-y-0.5"
+                      : "bg-emerald-50/90 text-emerald-800 border-emerald-200 border-b-2 border-b-emerald-300 shadow-[0_2px_6px_rgba(16,185,129,0.14)] hover:bg-emerald-100/80 hover:-translate-y-0.5"
+                    : isActive
+                    ? "bg-orange-500 text-white border-orange-600 border-b-2 border-b-orange-800 shadow-[0_4px_12px_rgba(249,115,22,0.35)] -translate-y-0.5"
+                    : "bg-orange-50/90 text-orange-800 border-orange-200 border-b-2 border-b-orange-300 shadow-[0_2px_6px_rgba(249,115,22,0.14)] hover:bg-orange-100/80 hover:-translate-y-0.5";
+
+                  const dotStyle = isActive
+                    ? "bg-white"
+                    : isInStock
+                    ? "bg-emerald-500"
+                    : "bg-orange-500";
+
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setSelectedCategory(option)}
+                      className={`inline-flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2 rounded-full font-black text-[9px] md:text-xs tracking-widest cursor-pointer transition-all duration-200 ease-out uppercase border active:translate-y-0.5 ${pillStyle}`}
+                    >
+                      <span className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${dotStyle}`} />
+                      <span>{option}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -237,14 +275,11 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
                     e.stopPropagation();
                     setSelectedProduct(product);
                   }}
-                  className={`
-                    mt-3 md:mt-5 w-full py-2 md:py-3 rounded-full text-[10px] md:text-base font-bold transition-all duration-300 ease-out border border-transparent
-                    ${
-                      isOutStock
-                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                        : "bg-black text-white cursor-pointer hover:shadow-[0_0_15px_rgba(0,0,0,0.25)] hover:scale-[1.02]"
-                    }
-                  `}
+                  className={`mt-3 md:mt-5 w-full py-2 md:py-3 rounded-full text-[10px] md:text-base font-bold transition-all duration-300 ease-out border border-transparent ${
+                    isOutStock
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "bg-black text-white cursor-pointer hover:shadow-[0_0_15px_rgba(0,0,0,0.25)] hover:scale-[1.02]"
+                  }`}
                 >
                   {isOutStock ? "AGOTADO" : "ELEGIR"}
                 </button>

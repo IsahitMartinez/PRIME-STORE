@@ -31,7 +31,7 @@ const SOCIALS = [
 ];
 
 const CONTACT = [
-  { icon: "mail", text: "primemzo@gmail.com" },
+  { icon: "mail", text: "primemzo314@gmail.com" },
   { icon: "pin", text: "Manzanillo, Colima. Mexico " },
 ];
 
