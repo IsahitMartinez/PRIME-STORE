@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SlidersHorizontal, ChevronDown } from "lucide-react";
 import NavBar from "../components/NavBar";
 import ProductDetailModal from "../components/ProductDetailModal";
 import ToastNotification from "../components/ToastNotification";
@@ -10,6 +11,7 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
   const [hoveredId, setHoveredId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("TODOS");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
 
@@ -58,8 +60,7 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
   });
 
   return (
-   <div className="min-h-screen bg-[#fefefc] px-2 pb-4 sm:p-4 md:p-8 pt-20 md:pt-24">
-      {/* El NavBar ahora tiene un poco más de aire lateral en móviles */}
+    <div className="min-h-screen bg-[#fefefc] px-2 pb-4 sm:p-4 md:p-8 pt-20 md:pt-24">
       <NavBar cartCount={cartCount} openCart={openCart} openNewsletter={openNewsletter} />
       <ToastNotification message={toastMessage} isVisible={showToast} />
 
@@ -75,31 +76,80 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
       </p>
 
       {!loading && products.length > 0 && (
-        <div className="flex flex-wrap gap-2 md:gap-4 mt-4 md:mt-6 px-2">
-          {filterOptions.map((option) => (
+        <div className="mt-4 md:mt-6 px-2">
+          <div className="flex items-center gap-2">
             <button
-              key={option}
               type="button"
-              onClick={() => setSelectedCategory(option)}
+              onClick={() => setIsFilterOpen((prev) => !prev)}
+              aria-expanded={isFilterOpen}
               className={`
-                px-3 md:px-6 py-1.5 md:py-2.5 rounded-full font-bold text-[9px] md:text-xs tracking-widest cursor-pointer
-                transition-all duration-300 ease-out uppercase
-                hover:-translate-y-1 active:-translate-y-0.5
+                inline-flex items-center gap-2.5 px-4 md:px-5 py-2 md:py-2.5 rounded-full
+                font-bold text-[10px] md:text-xs tracking-widest uppercase transition-all duration-300 cursor-pointer
                 ${
-                  selectedCategory === option
-                    ? "bg-black text-white shadow-lg scale-105"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  isFilterOpen || selectedCategory !== "TODOS"
+                    ? "bg-black text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }
               `}
             >
-              {option}
+              <SlidersHorizontal className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span>
+                {selectedCategory === "TODOS"
+                  ? "FILTRAR"
+                  : `FILTRO: ${selectedCategory}`}
+              </span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-300 ${
+                  isFilterOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
-          ))}
+
+            {selectedCategory !== "TODOS" && (
+              <button
+                type="button"
+                onClick={() => setSelectedCategory("TODOS")}
+                className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-black px-2 py-1.5 transition-colors cursor-pointer"
+              >
+                Limpiar
+              </button>
+            )}
+          </div>
+
+          <div
+            className={`grid transition-all duration-300 ease-out ${
+              isFilterOpen
+                ? "grid-rows-[1fr] opacity-100 mt-3 md:mt-4"
+                : "grid-rows-[0fr] opacity-0 mt-0 pointer-events-none"
+            }`}
+          >
+            <div className="overflow-hidden">
+              <div className="flex flex-wrap gap-2 md:gap-3 pt-1 pb-2">
+                {filterOptions.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setSelectedCategory(option)}
+                    className={`
+                      px-3.5 md:px-6 py-1.5 md:py-2.5 rounded-full font-bold text-[9px] md:text-xs tracking-widest cursor-pointer
+                      transition-all duration-300 ease-out uppercase
+                      ${
+                        selectedCategory === option
+                          ? "bg-black text-white shadow-md scale-[1.03]"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }
+                    `}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
       {loading ? (
-        // Grid forzada a 2 columnas en móviles (grid-cols-2)
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10 mt-6 md:mt-10 px-2">
           {[1, 2, 3, 4, 5, 6].map((n) => (
             <div
@@ -118,7 +168,6 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
           No hay prendas disponibles en esta categoría.
         </div>
       ) : (
-        // Grid forzada a 2 columnas en móviles (grid-cols-2)
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10 mt-6 md:mt-10 px-2">
           {filteredProducts.map((product) => {
             const isHovered = hoveredId === product.id;
@@ -161,7 +210,6 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
                   {badgeLabel}
                 </span>
 
-                {/* Altura de imagen reducida para móviles (h-48) */}
                 <div className="w-full h-48 md:h-80 rounded-2xl md:rounded-3xl overflow-hidden mb-3 md:mb-5 relative">
                   {firstImage && (
                     <img
@@ -175,7 +223,6 @@ function Shop({ addToCart, cartCount, openCart, openNewsletter }) {
                 </div>
 
                 <div>
-                  {/* Textos más compactos en móviles */}
                   <h2 className="text-sm md:text-xl font-bold leading-tight">{product.name}</h2>
                   <p className="text-sm md:text-lg text-green-500 font-semibold mt-1">{product.price} $</p>
                   <p className="text-[10px] md:text-sm text-gray-500 truncate">
