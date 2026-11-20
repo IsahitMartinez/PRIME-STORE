@@ -10,7 +10,7 @@ const STEPS = [
   {
     icon: "chat",
     title: "Contactanos",
-    text: "Escríbeme por WhatsApp o Instagram con tu lista y se te confirma disponibilidad.",
+    text: "Escríbenos por WhatsApp o Instagram con tu lista y se te confirma disponibilidad.",
   },
   {
     icon: "card",
