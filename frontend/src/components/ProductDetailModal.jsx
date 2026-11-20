@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, ShoppingBag } from "lucide-react";
 
 const getColorHex = (colorName) => {
   const normalized = colorName.toLowerCase().trim();
@@ -24,21 +24,16 @@ const getColorHex = (colorName) => {
 };
 
 function ProductDetailModal({ product, onClose, addToCart }) {
-  if (!product) return null;
-
-  // 1. Limpieza robusta de las imágenes para evitar que el carrusel se trabe
-  const parsedImages = product.image_url 
+  const parsedImages = product?.image_url
     ? product.image_url
         .split(",")
-        .map((url) => url.replace(/['"\n\r]/g, "").trim()) // Quita comillas y saltos de línea
+        .map((url) => url.replace(/['"\n\r]/g, "").trim())
         .filter(Boolean)
     : [];
-    
+
   const images = parsedImages.length > 0 ? parsedImages : [];
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const rawColors = product.colors || product.colores || "Único";
+  const rawColors = product?.colors || product?.colores || "Único";
   let parsedColors = ["Único"];
 
   if (Array.isArray(rawColors)) {
@@ -47,10 +42,21 @@ function ProductDetailModal({ product, onClose, addToCart }) {
     const cleanString = rawColors.replace(/[{}"']/g, "");
     parsedColors = cleanString.split(",").map((c) => c.trim()).filter(Boolean);
   }
-  
+
   const availableColors = parsedColors.length > 0 ? parsedColors : ["Único"];
+
+  const availableSizes =
+    Array.isArray(product?.sizes) && product.sizes.length > 0
+      ? product.sizes
+      : ["S", "M", "L", "XL"];
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(availableColors[0]);
   const [hoveredColor, setHoveredColor] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(availableSizes[0]);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
+
+  if (!product) return null;
 
   const colorImages = product.color_images || product.imagenes_color || {};
   const displayImage =
@@ -58,29 +64,28 @@ function ProductDetailModal({ product, onClose, addToCart }) {
     (selectedColor && colorImages[selectedColor]) ||
     images[currentImageIndex];
 
-  const isYogaPants = 
-    product.name && 
-    (product.name.toLowerCase().includes("pants yoga") || product.name.toLowerCase().includes("yoga"));
-    
+  const isYogaPants =
+    product.name &&
+    (product.name.toLowerCase().includes("pants yoga") ||
+      product.name.toLowerCase().includes("yoga"));
+
   const requiresSize = product.has_sizes || isYogaPants;
 
-  const availableSizes =
-    Array.isArray(product.sizes) && product.sizes.length > 0
-      ? product.sizes
-      : ["S", "M", "L", "XL"];
+  const descriptionText =
+    product.description ||
+    "Prenda urbana de alta calidad diseñada para máxima comodidad y estilo en el uso diario.";
 
-  const [selectedSize, setSelectedSize] = useState(availableSizes[0]);
-
-  const handleNextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  const handlePrevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  const handleNextImage = () =>
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  const handlePrevImage = () =>
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
 
   const handleAdd = () => {
     const itemToAdd = {
       ...product,
       selectedColor: selectedColor,
       selectedSize: requiresSize ? selectedSize : "Unitalla",
-      // Nos aseguramos de enviar la imagen que se está viendo al momento de agregar al carrito
-      image_url: displayImage 
+      image_url: displayImage,
     };
     addToCart(itemToAdd);
     onClose();
@@ -88,7 +93,7 @@ function ProductDetailModal({ product, onClose, addToCart }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-4"
       onClick={onClose}
     >
       <div
@@ -98,101 +103,128 @@ function ProductDetailModal({ product, onClose, addToCart }) {
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 bg-black/10 hover:bg-black/20 text-black p-2 rounded-full transition-colors cursor-pointer"
+          aria-label="Cerrar detalle"
+          className="absolute top-3 right-3 md:top-4 md:right-4 z-20 bg-white/90 hover:bg-white text-black p-2 rounded-full shadow-md transition-colors cursor-pointer"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
-        {/* 2. Añadí overflow-hidden aquí para que las imágenes no se salgan hacia abajo */}
-        <div className="w-full md:w-1/2 bg-gray-100 p-6 flex flex-col items-center justify-between relative min-h-[350px] overflow-hidden">
-          <div className="relative w-full h-80 md:h-96 flex items-center justify-center">
+        <div className="w-full md:w-1/2 bg-gray-100 p-3 md:p-6 flex flex-col items-center justify-center relative shrink-0 overflow-hidden">
+          <div className="relative w-full h-60 sm:h-72 md:h-96 flex items-center justify-center">
             {displayImage ? (
               <img
                 src={displayImage}
                 alt={product.name}
-                className="w-full h-full object-cover rounded-2xl shadow-md transition-all duration-300 ease-out"
+                className="max-h-full max-w-full w-auto h-auto object-contain rounded-2xl shadow-sm transition-all duration-300 ease-out"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200 rounded-2xl text-gray-400 font-bold">
+              <div className="w-full h-full flex items-center justify-center bg-gray-200 rounded-2xl text-gray-400 font-bold text-sm">
                 Sin Imagen
               </div>
             )}
-            
+
             {images.length > 1 && (
               <>
                 <button
                   type="button"
                   onClick={handlePrevImage}
-                  className="absolute left-2 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-md transition-transform active:scale-95 cursor-pointer"
+                  aria-label="Imagen anterior"
+                  className="absolute left-2 bg-white/85 hover:bg-white text-black p-1.5 md:p-2 rounded-full shadow-md transition-transform active:scale-95 cursor-pointer"
                 >
-                  <ChevronLeft size={20} />
+                  <ChevronLeft size={18} />
                 </button>
                 <button
                   type="button"
                   onClick={handleNextImage}
-                  className="absolute right-2 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-md transition-transform active:scale-95 cursor-pointer"
+                  aria-label="Imagen siguiente"
+                  className="absolute right-2 bg-white/85 hover:bg-white text-black p-1.5 md:p-2 rounded-full shadow-md transition-transform active:scale-95 cursor-pointer"
                 >
-                  <ChevronRight size={20} />
+                  <ChevronRight size={18} />
                 </button>
               </>
             )}
           </div>
 
-          {/* Carrusel de miniaturas (thumbnails) */}
           {images.length > 1 && (
-            <div className="flex gap-2 mt-4 overflow-x-auto max-w-full pb-2 scrollbar-hide">
+            <div className="flex gap-1.5 md:gap-2 mt-2.5 md:mt-4 overflow-x-auto max-w-full pb-0.5 scrollbar-hide">
               {images.map((img, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => setCurrentImageIndex(idx)}
-                  className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
+                  className={`w-9 h-9 md:w-14 md:h-14 rounded-xl overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
                     currentImageIndex === idx
                       ? "border-black scale-105"
                       : "border-transparent opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <img src={img} alt={`Vista ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img
+                    src={img}
+                    alt={`Vista ${idx + 1}`}
+                    className="w-full h-full object-cover object-top"
+                  />
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        <div className="w-full md:w-1/2 p-8 flex flex-col justify-between overflow-y-auto">
-          <div>
-            <span className="text-xs font-black tracking-widest text-gray-400 uppercase">
+        <div className="w-full md:w-1/2 flex flex-col flex-1 min-h-0 bg-white">
+          <div className="flex-1 overflow-y-auto px-5 pt-3.5 pb-3 md:p-8 md:pb-4">
+            <span className="text-[10px] md:text-xs font-black tracking-widest text-gray-400 uppercase block">
               {product.categoria || product.category || "STREETWEAR"}
             </span>
 
-            <h2 className="text-4xl text-black mt-1 uppercase" style={{ fontFamily: "Bebas Neue" }}>
-              {product.name}
-            </h2>
+            <div className="flex items-baseline justify-between gap-3 mt-0.5 md:block">
+              <h2
+                className="text-2xl sm:text-3xl md:text-4xl text-black leading-none uppercase"
+                style={{ fontFamily: "Bebas Neue" }}
+              >
+                {product.name}
+              </h2>
 
-            <p className="text-2xl font-bold text-green-600 mt-2">
-              ${parseFloat(product.price).toFixed(2)} MXN
-            </p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-600 md:mt-1.5 whitespace-nowrap">
+                ${parseFloat(product.price).toFixed(2)} MXN
+              </p>
+            </div>
 
-            <p className="text-gray-600 text-sm mt-4 leading-relaxed">
-              {product.description || "Prenda urbana de alta calidad diseñada para máxima comodidad y estilo en el uso diario."}
-            </p>
+            <div className="mt-1.5 md:mt-3">
+              <p
+                className={`text-gray-500 text-xs sm:text-sm leading-snug ${
+                  isDescExpanded ? "" : "line-clamp-2"
+                }`}
+              >
+                {descriptionText}
+              </p>
+              {descriptionText.length > 95 && (
+                <button
+                  type="button"
+                  onClick={() => setIsDescExpanded((prev) => !prev)}
+                  className="text-[11px] font-bold text-black underline underline-offset-2 mt-1 cursor-pointer"
+                >
+                  {isDescExpanded ? "Ver menos" : "Ver más"}
+                </button>
+              )}
+            </div>
 
-            <div className="mt-6">
-              <h3 className="text-xs font-bold tracking-wider text-gray-700 uppercase mb-3 flex items-center justify-between">
+            <div className="mt-3.5 md:mt-5">
+              <h3 className="text-[11px] md:text-xs font-bold tracking-wider text-gray-700 uppercase mb-2 flex items-center justify-between">
                 <span>COLOR:</span>
                 <span className="text-gray-400 font-semibold">
                   {hoveredColor || selectedColor}
                 </span>
               </h3>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 md:gap-2">
                 {availableColors.map((color) => {
                   const isSelected = selectedColor === color;
                   const isHovered = hoveredColor === color;
                   const isActive = isSelected || isHovered;
-                  
+
                   const hexColor = getColorHex(color);
-                  const isLightText = ["blanco", "amarillo"].includes(color.toLowerCase().trim());
+                  const isLightText = ["blanco", "amarillo"].includes(
+                    color.toLowerCase().trim()
+                  );
 
                   return (
                     <button
@@ -202,15 +234,21 @@ function ProductDetailModal({ product, onClose, addToCart }) {
                       onMouseLeave={() => setHoveredColor(null)}
                       onClick={() => setSelectedColor(color)}
                       style={{
-                        backgroundColor: isActive ? hexColor : "#F3F4F6", 
-                        color: isActive ? (isLightText ? "#000000" : "#ffffff") : "#374151",
-                        borderColor: isActive ? hexColor : "transparent"
+                        backgroundColor: isActive ? hexColor : "#F3F4F6",
+                        color: isActive
+                          ? isLightText
+                            ? "#000000"
+                            : "#ffffff"
+                          : "#374151",
+                        borderColor: isActive ? hexColor : "transparent",
                       }}
-                      className={`
-                        px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer uppercase border-2
-                        ${isActive ? "shadow-md scale-105" : "hover:bg-gray-200"}
-                        ${color.toLowerCase().trim() === "blanco" && isActive ? "border-gray-300" : ""}
-                      `}
+                      className={`px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-[11px] md:text-xs font-bold transition-all duration-200 cursor-pointer uppercase border-2 ${
+                        isActive ? "shadow-sm scale-105" : "hover:bg-gray-200"
+                      } ${
+                        color.toLowerCase().trim() === "blanco" && isActive
+                          ? "border-gray-300"
+                          : ""
+                      }`}
                     >
                       {color}
                     </button>
@@ -220,19 +258,19 @@ function ProductDetailModal({ product, onClose, addToCart }) {
             </div>
 
             {requiresSize ? (
-              <div className="mt-6">
-                <h3 className="text-xs font-bold tracking-wider text-gray-700 uppercase mb-3">
+              <div className="mt-3.5 md:mt-5">
+                <h3 className="text-[11px] md:text-xs font-bold tracking-wider text-gray-700 uppercase mb-2">
                   SELECCIONAR TALLA:
                 </h3>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5 md:gap-2">
                   {availableSizes.map((size) => (
                     <button
                       key={size}
                       type="button"
                       onClick={() => setSelectedSize(size)}
-                      className={`w-11 h-11 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase ${
+                      className={`w-10 h-10 md:w-11 md:h-11 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase ${
                         selectedSize === size
-                          ? "bg-black text-white shadow-md scale-105"
+                          ? "bg-black text-white shadow-sm scale-105"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
@@ -242,21 +280,24 @@ function ProductDetailModal({ product, onClose, addToCart }) {
                 </div>
               </div>
             ) : (
-              <div className="mt-4">
-                <span className="inline-block bg-gray-100 text-gray-600 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+              <div className="mt-3 md:mt-4">
+                <span className="inline-block bg-gray-100 text-gray-600 text-[10px] md:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                   TALLA: UNITALLA
                 </span>
               </div>
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={handleAdd}
-            className="mt-8 w-full bg-black text-white py-4 rounded-full font-bold text-sm tracking-widest uppercase transition-all duration-300 hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)] hover:-translate-y-1 active:-translate-y-0.5 cursor-pointer shrink-0"
-          >
-            AGREGAR AL CARRITO
-          </button>
+          <div className="shrink-0 border-t border-gray-100 bg-white px-5 py-3 md:px-8 md:py-5">
+            <button
+              type="button"
+              onClick={handleAdd}
+              className="w-full bg-black text-white py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm tracking-widest uppercase transition-all duration-300 hover:bg-gray-900 hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2.5 shadow-lg"
+            >
+              <ShoppingBag size={18} />
+              <span>AGREGAR AL CARRITO</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
